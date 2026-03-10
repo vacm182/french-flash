@@ -189,7 +189,7 @@ body::before {
 <div class="header">
   <h1>🇫🇷 Français</h1>
   <div class="tagline">Vocabulary · Conjugations · A1 → B2</div>
-  <div class="version">v2.7</div>
+  <div class="version">v2.6</div>
 </div>
 
 <!-- Topo decoration -->
@@ -1560,39 +1560,29 @@ async function sendConvMessage() {
   }
 }
 
-// ─── VOICE ENGINE — Google Neural2 TTS ───────────────────────────────────
-let currentAudio = null;
+// ─── VOICE ENGINE — browser TTS ───────────────────────────────────────────
+function speakConv(text, character) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = character.lang || "fr-FR";
+  utt.rate = character.rate || 1.0;
+  utt.pitch = character.pitch || 1.0;
 
-async function speakConv(text, character) {
-  // Stop any playing audio
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  window.speechSynthesis?.cancel();
+  const voices = window.speechSynthesis.getVoices();
+  const frVoices = voices.filter(v => v.lang.startsWith(character.lang?.split("-")[0] || "fr"));
 
-  try {
-    const res = await fetch("https://francais-flash.vacm182.workers.dev/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text,
-        voiceName: character.voiceName || "fr-FR-Neural2-B",
-        languageCode: character.lang || "fr-FR",
-        speakingRate: character.rate || 1.0,
-        pitch: character.pitch || 0,
-      }),
-    });
-    const data = await res.json();
-    if (data.audioContent) {
-      const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
-      currentAudio = audio;
-      audio.play();
-    }
-  } catch(e) {
-    // Fallback to browser TTS if Neural fails
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = character.lang || "fr-FR";
-    utt.rate = character.rate || 1.0;
-    window.speechSynthesis?.speak(utt);
+  let chosen = null;
+  if (character.gender === "female") {
+    chosen = frVoices.find(v => /amelie|aurelie|marie|sophie|elsa|celine|alice|julie|audrey|virginie|florence/i.test(v.name));
   }
+  if (!chosen && character.gender === "male") {
+    chosen = frVoices.find(v => /thomas|pierre|nicolas|jean|paul|felix|bruno|martin|yannick/i.test(v.name));
+  }
+  if (!chosen) chosen = frVoices[0] || null;
+  if (chosen) utt.voice = chosen;
+
+  window.speechSynthesis.speak(utt);
 }
 
 // ─── CLAUDE API via built-in proxy ────────────────────────────────────────
