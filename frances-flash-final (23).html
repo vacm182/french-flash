@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🇫🇷 Français Flash</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #0a0a0a;
+  --card: #111;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --text: #fff;
+  --muted: #888;
+  --muted2: #555;
+  --A1: #4ade80;
+  --A2: #facc15;
+  --B1: #fb923c;
+  --B2: #f87171;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── APP SHELL ── */
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-width: 480px; margin: 0 auto; }
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+  position: relative; z-index: 10;
+}
+#topbar-logo { font-weight: 900; font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase; }
+#topbar-sub { font-size: 0.55rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
+#topbar-version { font-size: 0.55rem; color: #222; letter-spacing: 1px; }
+
+/* ── BOTTOM NAV ── */
+#bottom-nav {
+  display: flex;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.nav-btn {
+  flex: 1; padding: 12px 4px 10px;
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  color: var(--muted); transition: color 0.2s;
+  font-family: inherit;
+}
+.nav-btn.active { color: var(--text); }
+.nav-btn svg { width: 22px; height: 22px; }
+.nav-btn span { font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+
+/* ── CONTENT AREA ── */
+#content { flex: 1; overflow: hidden; position: relative; }
+.screen { display: none; height: 100%; overflow: hidden; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── FEED SCREEN ── */
+#feed-screen {
+  overflow: hidden;
+}
+
+/* ── FEED CARD ── */
+.feed-card {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.feed-card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.feed-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.feed-card-meta { flex: 1; }
+.feed-card-cat { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+.feed-level-badge {
+  font-size: 0.55rem; font-weight: 900; padding: 2px 7px; border-radius: 2px;
+  margin-left: auto; flex-shrink: 0;
+}
+.badge-A1 { background: var(--A1); color: #000; }
+.badge-A2 { background: var(--A2); color: #000; }
+.badge-B1 { background: var(--B1); color: #000; }
+.badge-B2 { background: var(--B2); color: #000; }
+
+/* ── CARD FACE ── */
+.feed-face {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+.feed-face:active { border-color: #444; }
+.feed-face-label {
+  font-size: 0.58rem; color: var(--muted); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.feed-face-word {
+  font-size: 2.2rem; font-weight: 900; line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+.feed-face-hint { font-size: 0.72rem; color: var(--muted2); margin-top: 10px; letter-spacing: 1px; }
+.feed-tap-hint {
+  font-size: 0.58rem; color: #222; letter-spacing: 2px;
+  text-transform: uppercase; margin-top: 16px;
+}
+
+/* ── CARD ACTIONS ── */
+.feed-actions {
+  display: flex; gap: 14px; align-items: center;
+  padding: 14px 4px 4px;
+}
+.action-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 1.3rem;
+  padding: 4px; transition: color 0.15s; display: flex; align-items: center;
+}
+.action-btn:active { color: var(--text); }
+.action-btn.sound { color: #555; }
+.action-count { font-size: 0.65rem; color: var(--muted2); letter-spacing: 1px; margin-left: 2px; }
+
+/* answer buttons */
+.feed-flip-btns { display: flex; gap: 8px; margin-top: 10px; }
+.flip-btn {
+  flex: 1; padding: 13px; border-radius: 8px; border: none;
+  font-size: 0.8rem; cursor: pointer; font-family: inherit;
+  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  transition: opacity 0.2s;
+}
+.flip-btn:disabled { opacity: 0.25; }
+
+/* speak box */
+.feed-speak-box {
+  border-radius: 8px; padding: 14px; margin-top: 10px;
+  text-align: center; border: 1px solid var(--border2); background: var(--card);
+}
+
+/* ── FILTER BAR ── */
+#filter-bar {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+}
+.chip-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.chip {
+  padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2);
+  cursor: pointer; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase;
+  font-family: inherit; transition: all 0.15s; background: transparent; color: var(--muted);
+  white-space: nowrap;
+}
+.chip.active { background: var(--text); color: #000; border-color: var(--text); font-weight: 700; }
+.chip[data-level="A1"].active { background: var(--A1); border-color: var(--A1); color: #000; }
+.chip[data-level="A2"].active { background: var(--A2); border-color: var(--A2); color: #000; }
+.chip[data-level="B1"].active { background: var(--B1); border-color: var(--B1); color: #000; }
+.chip[data-level="B2"].active { background: var(--B2); border-color: var(--B2); color: #000; }
+
+/* mode toggle row */
+.mode-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.mode-btn {
+  padding: 5px 13px; border-radius: 6px; border: 1px solid var(--border2);
+  font-size: 0.68rem; letter-spacing: 1px; font-family: inherit;
+  cursor: pointer; background: transparent; color: var(--muted); text-transform: uppercase;
+  transition: all 0.15s;
+}
+.mode-btn.active { background: var(--text); color: #000; border-color: var(--text); font-weight: 700; }
+
+.speak-pill {
+  display: flex; align-items: center; gap: 6px; margin-left: auto;
+  padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2);
+  cursor: pointer; font-size: 0.65rem; color: var(--muted); font-family: inherit;
+  background: transparent; letter-spacing: 1px; transition: all 0.2s;
+}
+.speak-pill.on { border-color: var(--A1); color: var(--A1); background: rgba(74,222,128,0.05); }
+
+/* ── VERBS SCREEN ── */
+#verbs-screen { padding: 0; overflow-y: auto; }
+.verb-card {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 14px 16px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.verb-table { width: 100%; border-collapse: collapse; }
+.verb-table td { padding: 9px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+.verb-table-wrap { display: none; background: #0d0d0d; padding: 0 0 4px; }
+
+/* ── CHAT SCREEN ── */
+#chat-screen { padding: 0; overflow-y: auto; }
+.scenario-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.1s;
+}
+.scenario-row:active { background: var(--card); }
+.scenario-emoji { font-size: 1.6rem; flex-shrink: 0; }
+.scenario-info { flex: 1; min-width: 0; }
+.scenario-title { font-weight: 700; font-size: 0.88rem; }
+.scenario-sub { font-size: 0.62rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── CONV SCREEN ── */
+#conv-screen { display: none; flex-direction: column; height: 100%; background: var(--bg); }
+#conv-screen.active { display: flex; }
+#conv-topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#conv-back {
+  background: var(--card); border: 1px solid var(--border2); border-radius: 6px;
+  color: var(--muted); padding: 6px 12px; cursor: pointer; font-family: inherit;
+  font-size: 0.75rem; letter-spacing: 1px; flex-shrink: 0;
+}
+#conv-messages {
+  flex: 1; overflow-y: auto; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+#conv-input-bar {
+  padding: 10px 16px 12px; border-top: 1px solid var(--border); flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+#conv-input {
+  width: 100%; background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; color: var(--text); font-family: inherit;
+  font-size: 0.9rem; padding: 10px 16px; resize: none; height: 44px;
+  outline: none; line-height: 1.4;
+}
+.conv-btns { display: flex; gap: 6px; align-items: center; }
+.conv-send {
+  background: var(--text); color: #000; border: none; border-radius: 20px;
+  font-weight: 900; font-size: 0.7rem; padding: 8px 18px; cursor: pointer;
+  letter-spacing: 1px; font-family: inherit; flex-shrink: 0;
+}
+.conv-mic-btn {
+  background: var(--card); color: var(--muted); border: 1px solid var(--border2);
+  border-radius: 20px; font-size: 0.7rem; padding: 8px 14px; cursor: pointer;
+  letter-spacing: 1px; font-family: inherit; flex-shrink: 0;
+}
+.conv-hint-btn {
+  background: transparent; border: 1px solid var(--border); border-radius: 20px;
+  color: var(--muted2); font-size: 0.65rem; padding: 6px 12px; cursor: pointer;
+  letter-spacing: 1px; font-family: inherit; flex-shrink: 0;
+}
+#conv-hint-box {
+  font-size: 0.72rem; color: #444; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  line-height: 1.8; display: none; background: #080808;
+}
+#conv-mic-status { font-size: 0.6rem; color: #2a2a2a; letter-spacing: 1px; min-height: 14px; }
+
+/* ── RESULT SCREEN ── */
+#result-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.95); z-index: 100;
+  flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 16px;
+  overflow-y: auto;
+}
+#result-overlay.show { display: flex; }
+.result-trophy { font-size: 4rem; margin-bottom: 16px; }
+.result-score { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; }
+.result-msg { font-size: 0.75rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin: 8px 0 32px; }
+.result-btn {
+  padding: 14px 32px; border-radius: 8px; border: none; font-size: 0.85rem;
+  font-weight: 900; cursor: pointer; width: 100%; max-width: 280px;
+  font-family: inherit; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap { height: 2px; background: var(--border); margin: 0 16px 0; flex-shrink: 0; }
+.prog-fill { height: 100%; transition: width 0.4s; }
+
+/* ── QUIZ OPTIONS ── */
+.quiz-option {
+  padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border2);
+  font-size: 0.95rem; cursor: pointer; width: 100%; font-family: inherit;
+  margin-bottom: 6px; background: var(--card); color: #ccc;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: all 0.15s; text-align: left;
+}
+.quiz-option:disabled { cursor: default; }
+
+/* ── TOPOGRAPHIC BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    repeating-radial-gradient(ellipse at 30% 40%, transparent 0, transparent 28px, rgba(255,255,255,0.025) 29px, transparent 30px),
+    repeating-radial-gradient(ellipse at 70% 60%, transparent 0, transparent 20px, rgba(255,255,255,0.02) 21px, transparent 22px),
+    repeating-radial-gradient(ellipse at 50% 20%, transparent 0, transparent 35px, rgba(255,255,255,0.015) 36px, transparent 37px);
+}
+#app { position: relative; z-index: 1; }
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 4px rgba(239,68,68,0.15); }
+  50% { box-shadow: 0 0 0 10px rgba(239,68,68,0.05); }
+}
+
+/* ── FLIP CARD 3D ── */
+.flip-scene {
+  perspective: 900px;
+  width: 100%;
+  min-height: 155px;
+  flex-shrink: 0;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 155px;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4,0.2,0.2,1);
+}
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 24px 36px;
+  text-align: center;
+  cursor: pointer;
+  min-height: 155px;
+}
+.flip-face.back {
+  transform: rotateY(180deg);
+  background: #141414;
+  border-color: #333;
+}
+.flip-face.front { cursor: pointer; }
+.flip-face.back  { cursor: default; }
+
+/* ── STREAK ANIMATION ── */
+@keyframes streakPop {
+  0%   { transform: scale(0.6); opacity:0; }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1);   opacity:1; }
+}
+.streak-pop { animation: streakPop 0.3s ease-out forwards; }
+
+/* ── RESULT SCREEN ── */
+#result-overlay { overflow-y: auto; }
+#result-overlay.show { display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
+
+/* ── STAT BARS ANIMATE ── */
+@keyframes barGrow {
+  from { width: 0%; }
+}
+.stat-bar-fill { animation: barGrow 0.8s ease-out forwards; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div>
+      <div id="topbar-logo">🇫🇷 Français</div>
+      <div id="topbar-sub">A1 → B2</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="voice-indicator" style="font-size:0.58rem;color:#333;letter-spacing:1px;"></div>
+      <button onclick="openSettings()" style="background:none;border:none;cursor:pointer;color:#444;padding:4px;font-size:1.1rem;line-height:1;" title="Voice settings">⚙️</button>
+      <div id="topbar-version">v3.3</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div id="settings-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;padding:24px 20px;overflow-y:auto;">
+    <div style="max-width:440px;margin:0 auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="font-weight:900;font-size:1rem;letter-spacing:2px;text-transform:uppercase;">⚙️ Settings</div>
+        <button onclick="closeSettings()" style="background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#888;padding:6px 14px;cursor:pointer;font-family:inherit;letter-spacing:1px;">✕ Close</button>
+      </div>
+
+      <!-- Voice section -->
+      <div style="font-size:0.6rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">🎙 Voice Engine</div>
+
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="voice-browser-btn" onclick="setVoiceEngine('browser')"
+          style="flex:1;padding:12px;border-radius:8px;border:1px solid #4ade80;background:rgba(74,222,128,0.08);color:#4ade80;font-family:inherit;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:1px;">
+          🔈 Browser TTS<br><span style="font-weight:400;font-size:0.65rem;color:#555;">Free · Robotic</span>
+        </button>
+        <button id="voice-eleven-btn" onclick="setVoiceEngine('elevenlabs')"
+          style="flex:1;padding:12px;border-radius:8px;border:1px solid #333;background:transparent;color:#666;font-family:inherit;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:1px;">
+          ✨ ElevenLabs<br><span style="font-weight:400;font-size:0.65rem;">Human · Free tier</span>
+        </button>
+      </div>
+
+      <div id="eleven-setup" style="display:none;">
+        <div style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:16px;">
+          <div style="font-size:0.75rem;font-weight:700;margin-bottom:8px;">How to get a free API key:</div>
+          <div style="font-size:0.72rem;color:#777;line-height:1.7;">
+            1. Go to <span style="color:#4ade80;">elevenlabs.io</span> → Sign up free<br>
+            2. Free tier = <strong style="color:#fff;">10,000 chars/month</strong> (~500 flashcards)<br>
+            3. Profile → API Key → Copy it here 👇
+          </div>
+        </div>
+        <input id="eleven-key-input" type="password" placeholder="sk-... paste your ElevenLabs API key"
+          style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#fff;font-family:inherit;font-size:0.85rem;padding:12px 14px;outline:none;margin-bottom:10px;"
+          oninput="onKeyInput()" />
+        <div style="font-size:0.65rem;color:#444;margin-bottom:12px;letter-spacing:0.5px;">Key is stored only in your browser (localStorage). Never sent anywhere except ElevenLabs.</div>
+        <button onclick="saveElevenKey()"
+          style="width:100%;padding:12px;border-radius:8px;border:none;background:#fff;color:#000;font-weight:900;font-size:0.8rem;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;">
+          Save &amp; Test Voice
+        </button>
+        <div id="eleven-status" style="font-size:0.72rem;color:#555;margin-top:8px;min-height:20px;text-align:center;"></div>
+      </div>
+
+      <!-- Voice selector (shown when ElevenLabs connected) -->
+      <div id="eleven-voices-section" style="display:none;margin-top:16px;">
+        <div style="font-size:0.6rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">French Voices</div>
+        <div id="voice-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid #1a1a1a;">
+        <div style="font-size:0.6rem;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">About Browser TTS</div>
+        <div style="font-size:0.7rem;color:#555;line-height:1.7;">
+          On Android: <span style="color:#777;">Settings → TTS → Google → Français → Download high-quality voice</span><br>
+          On iOS: <span style="color:#777;">Settings → Accessibility → Spoken Content → Voices → French</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- FEED SCREEN -->
+    <div id="feed-screen" class="screen active">
+      <!-- filter bar -->
+      <div id="filter-bar">
+        <div class="chip-row" id="level-chips"></div>
+        <div class="chip-row" id="cat-chips"></div>
+        <div class="mode-row">
+          <button class="mode-btn active" id="mode-fc" onclick="setMode('flashcard')">▶ Flash</button>
+          <button class="mode-btn" id="mode-qz" onclick="setMode('quiz')">◈ Quiz</button>
+          <button class="mode-btn" id="mode-dir" onclick="toggleDir()">FR→EN</button>
+          <button class="speak-pill" id="speak-pill" onclick="toggleSpeakMode()">🎤 <span id="speak-pill-label">Speak</span></button>
+        </div>
+        <!-- Quiz length selector — shown only in quiz mode -->
+        <div id="quiz-length-row" style="display:none;gap:5px;flex-wrap:wrap;" class="chip-row">
+          <span style="font-size:0.6rem;color:#555;letter-spacing:1px;align-self:center;margin-right:2px;">Questions:</span>
+          <button class="chip active" id="ql-10"  onclick="setQuizLength(10)"  data-ql>10</button>
+          <button class="chip"        id="ql-20"  onclick="setQuizLength(20)"  data-ql>20</button>
+          <button class="chip"        id="ql-50"  onclick="setQuizLength(50)"  data-ql>50</button>
+          <button class="chip"        id="ql-100" onclick="setQuizLength(100)" data-ql>100</button>
+        </div>
+      </div>
+      <!-- progress -->
+      <div class="prog-wrap"><div class="prog-fill" id="fc-bar" style="width:0%;background:#fff;"></div></div>
+      <!-- stats -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px 0;font-size:0.62rem;color:#2a2a2a;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;">
+        <span>⭐ <span id="fc-score">0</span></span>
+        <span id="streak-display" style="font-weight:900;font-size:0.8rem;transition:opacity 0.3s;opacity:0;"></span>
+        <span id="fc-progress-txt"></span>
+      </div>
+      <!-- card feed -->
+      <div id="card-feed" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+    </div>
+
+    <!-- VERBS SCREEN -->
+    <div id="verbs-screen" class="screen">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
+        <div class="chip-row" id="verb-level-chips"></div>
+      </div>
+      <div id="verb-list" style="overflow-y:auto;flex:1;"></div>
+    </div>
+
+    <!-- LISTENING SCREEN -->
+    <div id="listen-screen" class="screen">
+      <!-- filter bar -->
+      <div id="lq-filter-bar" style="padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <div class="chip-row" id="lq-level-chips"></div>
+          <div class="chip-row" style="margin-left:auto;" id="lq-count-chips"></div>
+        </div>
+      </div>
+      <div class="prog-wrap"><div class="prog-fill" id="lq-bar" style="width:0%;background:#fff;"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 16px 0;font-size:0.62rem;color:#555;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;">
+        <span>⭐ <span id="lq-score">0</span></span>
+        <span id="lq-streak-display" style="font-weight:900;font-size:0.8rem;transition:opacity 0.3s;opacity:0;"></span>
+        <span id="lq-progress-txt"></span>
+      </div>
+      <div id="lq-feed" style="flex:1;overflow:hidden;display:flex;flex-direction:column;"></div>
+    </div>
+    <div id="chat-screen" class="screen">
+      <div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:0.6rem;color:#666;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;">Choose a scenario</div>
+      <div id="scenario-list" style="overflow-y:auto;flex:1;"></div>
+    </div>
+
+    <!-- CONV SCREEN (overlaid) -->
+    <div id="conv-screen">
+      <div id="conv-topbar">
+        <button id="conv-back" onclick="closeConv()">←</button>
+        <div style="flex:1;min-width:0;">
+          <div id="conv-title" style="font-weight:900;font-size:0.9rem;letter-spacing:0.5px;"></div>
+          <div id="conv-level-tag" style="font-size:0.6rem;color:#777;letter-spacing:1px;margin-top:1px;"></div>
+        </div>
+        <div id="conv-char-avatar" style="font-size:2rem;flex-shrink:0;"></div>
+      </div>
+      <div id="conv-messages"></div>
+      <div id="conv-input-bar">
+        <div id="conv-hint-box"></div>
+        <textarea id="conv-input" placeholder="Tapez en français..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendConvMessage();}"></textarea>
+        <div class="conv-btns">
+          <div id="conv-mic-status"></div>
+          <button class="conv-hint-btn" onclick="toggleHint()">💡 Hint</button>
+          <button class="conv-mic-btn" id="conv-mic-btn" onclick="toggleConvMic()">🎤</button>
+          <button class="conv-send" onclick="sendConvMessage()">SEND</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav">
+    <button class="nav-btn active" id="nav-feed" onclick="switchScreen('feed')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>Play</span>
+    </button>
+    <button class="nav-btn" id="nav-listen" onclick="switchScreen('listen')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+      <span>Listen</span>
+    </button>
+    <button class="nav-btn" id="nav-verbs" onclick="switchScreen('verbs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      <span>Verbs</span>
+    </button>
+    <button class="nav-btn" id="nav-chat" onclick="switchScreen('chat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Chat</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- RESULT OVERLAY (content built dynamically by showResult()) -->
+<div id="result-overlay"></div>
+
+<script>
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const vocab = [
+  // A1 - Greetings
+  {fr:"Bonjour",en:"Hello / Good morning",level:"A1",category:"Greetings"},
+  {fr:"Bonsoir",en:"Good evening",level:"A1",category:"Greetings"},
+  {fr:"Au revoir",en:"Goodbye",level:"A1",category:"Greetings"},
+  {fr:"Merci",en:"Thank you",level:"A1",category:"Greetings"},
+  {fr:"S'il vous plaît",en:"Please",level:"A1",category:"Greetings"},
+  {fr:"Enchanté(e)",en:"Nice to meet you",level:"A1",category:"Greetings"},
+  {fr:"Excusez-moi",en:"Excuse me",level:"A1",category:"Greetings"},
+  // A1 - Family
+  {fr:"La mère",en:"The mother",level:"A1",category:"Family"},
+  {fr:"Le père",en:"The father",level:"A1",category:"Family"},
+  {fr:"Le frère",en:"The brother",level:"A1",category:"Family"},
+  {fr:"La sœur",en:"The sister",level:"A1",category:"Family"},
+  {fr:"Le fils",en:"The son",level:"A1",category:"Family"},
+  {fr:"La fille",en:"The daughter",level:"A1",category:"Family"},
+  {fr:"Le mari",en:"The husband",level:"A1",category:"Family"},
+  {fr:"La femme",en:"The wife",level:"A1",category:"Family"},
+  // A1 - Colors
+  {fr:"Rouge",en:"Red",level:"A1",category:"Colors"},
+  {fr:"Bleu",en:"Blue",level:"A1",category:"Colors"},
+  {fr:"Vert",en:"Green",level:"A1",category:"Colors"},
+  {fr:"Jaune",en:"Yellow",level:"A1",category:"Colors"},
+  {fr:"Blanc",en:"White",level:"A1",category:"Colors"},
+  {fr:"Noir",en:"Black",level:"A1",category:"Colors"},
+  {fr:"Rose",en:"Pink",level:"A1",category:"Colors"},
+  // A1 - Body
+  {fr:"La tête",en:"The head",level:"A1",category:"Body"},
+  {fr:"Les yeux",en:"The eyes",level:"A1",category:"Body"},
+  {fr:"Le nez",en:"The nose",level:"A1",category:"Body"},
+  {fr:"La bouche",en:"The mouth",level:"A1",category:"Body"},
+  {fr:"Les mains",en:"The hands",level:"A1",category:"Body"},
+  {fr:"Les pieds",en:"The feet",level:"A1",category:"Body"},
+  // A1 - Places
+  {fr:"La maison",en:"The house",level:"A1",category:"Places"},
+  {fr:"L'école",en:"The school",level:"A1",category:"Places"},
+  {fr:"Le café",en:"The café",level:"A1",category:"Places"},
+  {fr:"La gare",en:"The station",level:"A1",category:"Places"},
+  {fr:"L'hôpital",en:"The hospital",level:"A1",category:"Places"},
+  // A2 - Weather
+  {fr:"Il fait beau",en:"Nice weather",level:"A2",category:"Weather"},
+  {fr:"Il pleut",en:"It's raining",level:"A2",category:"Weather"},
+  {fr:"Il neige",en:"It's snowing",level:"A2",category:"Weather"},
+  {fr:"Il fait froid",en:"It's cold",level:"A2",category:"Weather"},
+  {fr:"Il fait chaud",en:"It's hot",level:"A2",category:"Weather"},
+  // A2 - Food
+  {fr:"Le pain",en:"The bread",level:"A2",category:"Food"},
+  {fr:"Le fromage",en:"The cheese",level:"A2",category:"Food"},
+  {fr:"La viande",en:"The meat",level:"A2",category:"Food"},
+  {fr:"Le poisson",en:"The fish",level:"A2",category:"Food"},
+  {fr:"Les légumes",en:"The vegetables",level:"A2",category:"Food"},
+  {fr:"Les fruits",en:"The fruits",level:"A2",category:"Food"},
+  // A2 - Time
+  {fr:"Aujourd'hui",en:"Today",level:"A2",category:"Time"},
+  {fr:"Demain",en:"Tomorrow",level:"A2",category:"Time"},
+  {fr:"Hier",en:"Yesterday",level:"A2",category:"Time"},
+  {fr:"Maintenant",en:"Now",level:"A2",category:"Time"},
+  {fr:"Toujours",en:"Always",level:"A2",category:"Time"},
+  {fr:"Jamais",en:"Never",level:"A2",category:"Time"},
+  {fr:"Souvent",en:"Often",level:"A2",category:"Time"},
+  {fr:"Parfois",en:"Sometimes",level:"A2",category:"Time"},
+  // A2 - Adjectives
+  {fr:"Grand",en:"Big",level:"A2",category:"Adjectives"},
+  {fr:"Petit",en:"Small",level:"A2",category:"Adjectives"},
+  {fr:"Vieux",en:"Old",level:"A2",category:"Adjectives"},
+  {fr:"Jeune",en:"Young",level:"A2",category:"Adjectives"},
+  {fr:"Heureux",en:"Happy",level:"A2",category:"Adjectives"},
+  {fr:"Triste",en:"Sad",level:"A2",category:"Adjectives"},
+  {fr:"Fatigué",en:"Tired",level:"A2",category:"Adjectives"},
+  {fr:"Facile",en:"Easy",level:"A2",category:"Adjectives"},
+  {fr:"Difficile",en:"Difficult",level:"A2",category:"Adjectives"},
+  // A2 - Transport
+  {fr:"Le métro",en:"The subway",level:"A2",category:"Transport"},
+  {fr:"Le bus",en:"The bus",level:"A2",category:"Transport"},
+  {fr:"Le train",en:"The train",level:"A2",category:"Transport"},
+  {fr:"L'avion",en:"The plane",level:"A2",category:"Transport"},
+  {fr:"La voiture",en:"The car",level:"A2",category:"Transport"},
+  {fr:"Le vélo",en:"The bicycle",level:"A2",category:"Transport"},
+  // B1 - Emotions
+  {fr:"La fierté",en:"Pride",level:"B1",category:"Emotions"},
+  {fr:"La honte",en:"Shame",level:"B1",category:"Emotions"},
+  {fr:"L'inquiétude",en:"Worry / Concern",level:"B1",category:"Emotions"},
+  {fr:"La jalousie",en:"Jealousy",level:"B1",category:"Emotions"},
+  {fr:"La confiance",en:"Confidence / Trust",level:"B1",category:"Emotions"},
+  {fr:"La déception",en:"Disappointment",level:"B1",category:"Emotions"},
+  {fr:"La surprise",en:"Surprise",level:"B1",category:"Emotions"},
+  {fr:"La nostalgie",en:"Nostalgia",level:"B1",category:"Emotions"},
+  // B1 - Work
+  {fr:"Le bureau",en:"The office",level:"B1",category:"Work"},
+  {fr:"La réunion",en:"The meeting",level:"B1",category:"Work"},
+  {fr:"Le collègue",en:"The colleague",level:"B1",category:"Work"},
+  {fr:"Le salaire",en:"The salary",level:"B1",category:"Work"},
+  {fr:"La candidature",en:"The application",level:"B1",category:"Work"},
+  {fr:"L'entretien",en:"The interview",level:"B1",category:"Work"},
+  {fr:"Le congé",en:"The leave / holiday",level:"B1",category:"Work"},
+  {fr:"La formation",en:"The training",level:"B1",category:"Work"},
+  // B1 - Society
+  {fr:"Le gouvernement",en:"The government",level:"B1",category:"Society"},
+  {fr:"La loi",en:"The law",level:"B1",category:"Society"},
+  {fr:"L'environnement",en:"The environment",level:"B1",category:"Society"},
+  {fr:"La société",en:"The society",level:"B1",category:"Society"},
+  {fr:"Les droits",en:"The rights",level:"B1",category:"Society"},
+  {fr:"L'égalité",en:"Equality",level:"B1",category:"Society"},
+  {fr:"La liberté",en:"Freedom",level:"B1",category:"Society"},
+  {fr:"Le citoyen",en:"The citizen",level:"B1",category:"Society"},
+  // B1 - Adjectives
+  {fr:"Ambitieux",en:"Ambitious",level:"B1",category:"Adjectives"},
+  {fr:"Courageux",en:"Brave",level:"B1",category:"Adjectives"},
+  {fr:"Honnête",en:"Honest",level:"B1",category:"Adjectives"},
+  {fr:"Paresseux",en:"Lazy",level:"B1",category:"Adjectives"},
+  {fr:"Prudent",en:"Careful / Cautious",level:"B1",category:"Adjectives"},
+  {fr:"Curieux",en:"Curious",level:"B1",category:"Adjectives"},
+  // B2 - Abstract
+  {fr:"L'ambiguïté",en:"Ambiguity",level:"B2",category:"Abstract"},
+  {fr:"La nuance",en:"Nuance",level:"B2",category:"Abstract"},
+  {fr:"L'enjeu",en:"The stake / issue",level:"B2",category:"Abstract"},
+  {fr:"La contrainte",en:"The constraint",level:"B2",category:"Abstract"},
+  {fr:"Le compromis",en:"The compromise",level:"B2",category:"Abstract"},
+  {fr:"La perspective",en:"The perspective",level:"B2",category:"Abstract"},
+  {fr:"L'hypothèse",en:"The hypothesis",level:"B2",category:"Abstract"},
+  {fr:"La tendance",en:"The trend",level:"B2",category:"Abstract"},
+  // B2 - Advanced Adjectives
+  {fr:"Accablant",en:"Overwhelming",level:"B2",category:"Adjectives"},
+  {fr:"Subtil",en:"Subtle",level:"B2",category:"Adjectives"},
+  {fr:"Pertinent",en:"Relevant",level:"B2",category:"Adjectives"},
+  {fr:"Incontournable",en:"Unavoidable / Essential",level:"B2",category:"Adjectives"},
+  {fr:"Éloquent",en:"Eloquent",level:"B2",category:"Adjectives"},
+  {fr:"Implacable",en:"Relentless",level:"B2",category:"Adjectives"},
+  // B2 - Politics & Media
+  {fr:"Le débat",en:"The debate",level:"B2",category:"Media"},
+  {fr:"Le discours",en:"The speech",level:"B2",category:"Media"},
+  {fr:"La polémique",en:"The controversy",level:"B2",category:"Media"},
+  {fr:"L'opinion publique",en:"Public opinion",level:"B2",category:"Media"},
+  {fr:"Le témoignage",en:"The testimony",level:"B2",category:"Media"},
+  {fr:"La désinformation",en:"Disinformation",level:"B2",category:"Media"},
+  // B2 - Advanced Verbs
+  {fr:"Approfondir",en:"To deepen / elaborate",level:"B2",category:"Verbs B2"},
+  {fr:"Souligner",en:"To underline / emphasize",level:"B2",category:"Verbs B2"},
+  {fr:"Envisager",en:"To consider / envision",level:"B2",category:"Verbs B2"},
+  {fr:"Prétendre",en:"To claim",level:"B2",category:"Verbs B2"},
+  {fr:"Reconnaître",en:"To recognize / admit",level:"B2",category:"Verbs B2"},
+  {fr:"S'avérer",en:"To turn out to be",level:"B2",category:"Verbs B2"},
+];
+
+const conjugations = [
+  {verb:"être",meaning:"to be",level:"A1",rows:[
+    {fr:"Je suis étudiant.",en:"I am a student."},
+    {fr:"Tu es à Paris ?",en:"Are you in Paris?"},
+    {fr:"Il est médecin.",en:"He is a doctor."},
+    {fr:"Elle est fatiguée.",en:"She is tired."},
+    {fr:"Nous sommes amis.",en:"We are friends."},
+    {fr:"Vous êtes espagnols ?",en:"Are you Spanish?"},
+    {fr:"Ils sont contents.",en:"They are happy."},
+    {fr:"Elles sont à la maison.",en:"They are at home."},
+  ]},
+  {verb:"avoir",meaning:"to have",level:"A1",rows:[
+    {fr:"J'ai un chien.",en:"I have a dog."},
+    {fr:"Tu as faim ?",en:"Are you hungry?"},
+    {fr:"Il a vingt ans.",en:"He is twenty years old."},
+    {fr:"Elle a une sœur.",en:"She has a sister."},
+    {fr:"Nous avons une voiture.",en:"We have a car."},
+    {fr:"Vous avez le temps ?",en:"Do you have time?"},
+    {fr:"Ils ont beaucoup d'amis.",en:"They have many friends."},
+    {fr:"Elles ont cours demain.",en:"They have class tomorrow."},
+  ]},
+  {verb:"aller",meaning:"to go",level:"A2",rows:[
+    {fr:"Je vais à l'école.",en:"I go to school."},
+    {fr:"Tu vas bien ?",en:"Are you okay?"},
+    {fr:"Il va au marché.",en:"He goes to the market."},
+    {fr:"Elle va à la plage.",en:"She goes to the beach."},
+    {fr:"Nous allons au cinéma.",en:"We go to the movies."},
+    {fr:"Vous allez où ?",en:"Where are you going?"},
+    {fr:"Ils vont au restaurant.",en:"They go to the restaurant."},
+    {fr:"Elles vont à la gare.",en:"They go to the station."},
+  ]},
+  {verb:"faire",meaning:"to do/make",level:"A2",rows:[
+    {fr:"Je fais du sport.",en:"I do sports."},
+    {fr:"Tu fais la cuisine ?",en:"Do you cook?"},
+    {fr:"Il fait ses devoirs.",en:"He does his homework."},
+    {fr:"Elle fait du vélo.",en:"She rides a bicycle."},
+    {fr:"Nous faisons une promenade.",en:"We take a walk."},
+    {fr:"Vous faites quoi ?",en:"What are you doing?"},
+    {fr:"Ils font la fête.",en:"They throw a party."},
+    {fr:"Elles font du shopping.",en:"They go shopping."},
+  ]},
+  {verb:"parler",meaning:"to speak",level:"A1",rows:[
+    {fr:"Je parle français.",en:"I speak French."},
+    {fr:"Tu parles avec Marie ?",en:"Do you talk with Marie?"},
+    {fr:"Il parle trop vite.",en:"He speaks too fast."},
+    {fr:"Elle parle trois langues.",en:"She speaks three languages."},
+    {fr:"Nous parlons de toi.",en:"We talk about you."},
+    {fr:"Vous parlez anglais ?",en:"Do you speak English?"},
+    {fr:"Ils parlent au téléphone.",en:"They talk on the phone."},
+    {fr:"Elles parlent entre elles.",en:"They talk among themselves."},
+  ]},
+  {verb:"manger",meaning:"to eat",level:"A1",rows:[
+    {fr:"Je mange une pomme.",en:"I eat an apple."},
+    {fr:"Tu manges quoi ?",en:"What do you eat?"},
+    {fr:"Il mange du pain.",en:"He eats bread."},
+    {fr:"Elle mange au café.",en:"She eats at the café."},
+    {fr:"Nous mangeons ensemble.",en:"We eat together."},
+    {fr:"Vous mangez du fromage ?",en:"Do you eat cheese?"},
+    {fr:"Ils mangent de la viande.",en:"They eat meat."},
+    {fr:"Elles mangent des fruits.",en:"They eat fruit."},
+  ]},
+  {verb:"vouloir",meaning:"to want",level:"A2",rows:[
+    {fr:"Je veux un café.",en:"I want a coffee."},
+    {fr:"Tu veux venir ?",en:"Do you want to come?"},
+    {fr:"Il veut dormir.",en:"He wants to sleep."},
+    {fr:"Elle veut une robe rouge.",en:"She wants a red dress."},
+    {fr:"Nous voulons voyager.",en:"We want to travel."},
+    {fr:"Vous voulez du thé ?",en:"Do you want tea?"},
+    {fr:"Ils veulent jouer.",en:"They want to play."},
+    {fr:"Elles veulent danser.",en:"They want to dance."},
+  ]},
+  {verb:"pouvoir",meaning:"can / to be able",level:"A2",rows:[
+    {fr:"Je peux t'aider.",en:"I can help you."},
+    {fr:"Tu peux venir demain ?",en:"Can you come tomorrow?"},
+    {fr:"Il peut courir vite.",en:"He can run fast."},
+    {fr:"Elle peut parler maintenant.",en:"She can speak now."},
+    {fr:"Nous pouvons partir.",en:"We can leave."},
+    {fr:"Vous pouvez entrer.",en:"You can come in."},
+    {fr:"Ils peuvent rester.",en:"They can stay."},
+    {fr:"Elles peuvent chanter.",en:"They can sing."},
+  ]},
+  {verb:"savoir",meaning:"to know",level:"B1",rows:[
+    {fr:"Je sais nager.",en:"I know how to swim."},
+    {fr:"Tu sais où il est ?",en:"Do you know where he is?"},
+    {fr:"Il sait la vérité.",en:"He knows the truth."},
+    {fr:"Elle sait cuisiner.",en:"She knows how to cook."},
+    {fr:"Nous savons que c'est difficile.",en:"We know it's difficult."},
+    {fr:"Vous savez parler français ?",en:"Do you know how to speak French?"},
+    {fr:"Ils savent ce qu'ils font.",en:"They know what they're doing."},
+    {fr:"Elles savent lire.",en:"They know how to read."},
+  ]},
+  {verb:"devoir",meaning:"must / to have to",level:"B1",rows:[
+    {fr:"Je dois partir.",en:"I must leave."},
+    {fr:"Tu dois travailler.",en:"You have to work."},
+    {fr:"Il doit être fatigué.",en:"He must be tired."},
+    {fr:"Elle doit rentrer.",en:"She has to go home."},
+    {fr:"Nous devons décider.",en:"We must decide."},
+    {fr:"Vous devez écouter.",en:"You must listen."},
+    {fr:"Ils doivent choisir.",en:"They have to choose."},
+    {fr:"Elles doivent comprendre.",en:"They must understand."},
+  ]},
+  {verb:"croire",meaning:"to believe / think",level:"B2",rows:[
+    {fr:"Je crois que tu as raison.",en:"I think you're right."},
+    {fr:"Tu crois vraiment ça ?",en:"Do you really believe that?"},
+    {fr:"Il croit tout ce qu'on lui dit.",en:"He believes everything he's told."},
+    {fr:"Elle croit en ses chances.",en:"She believes in her chances."},
+    {fr:"Nous croyons en ce projet.",en:"We believe in this project."},
+    {fr:"Vous croyez à la chance ?",en:"Do you believe in luck?"},
+    {fr:"Ils croient avoir raison.",en:"They think they're right."},
+    {fr:"Elles croient en l'avenir.",en:"They believe in the future."},
+  ]},
+  {verb:"permettre",meaning:"to allow / enable",level:"B2",rows:[
+    {fr:"Je me permets de vous écrire.",en:"I take the liberty of writing to you."},
+    {fr:"Tu te permets trop de choses.",en:"You allow yourself too many things."},
+    {fr:"Il permet à tout le monde d'entrer.",en:"He allows everyone to enter."},
+    {fr:"Elle ne permet pas les exceptions.",en:"She doesn't allow exceptions."},
+    {fr:"Nous permettons ce changement.",en:"We allow this change."},
+    {fr:"Vous permettez ?",en:"May I? / Do you allow it?"},
+    {fr:"Ils permettent une meilleure vie.",en:"They enable a better life."},
+    {fr:"Elles permettent la réussite.",en:"They enable success."},
+  ]},
+];
+
+const frases = [
+  // être
+  {fr:"Il est médecin.",en:"He is a doctor.",level:"A1",category:"Phrases",hint:"être"},
+  {fr:"Elle est fatiguée.",en:"She is tired.",level:"A1",category:"Phrases",hint:"être"},
+  {fr:"Ils sont contents.",en:"They are happy.",level:"A1",category:"Phrases",hint:"être"},
+  {fr:"Nous sommes amis.",en:"We are friends.",level:"A1",category:"Phrases",hint:"être"},
+  // avoir
+  {fr:"Il a vingt ans.",en:"He is twenty years old.",level:"A1",category:"Phrases",hint:"avoir"},
+  {fr:"Ils ont beaucoup d'amis.",en:"They have many friends.",level:"A1",category:"Phrases",hint:"avoir"},
+  // parler / manger
+  {fr:"Il parle trop vite.",en:"He speaks too fast.",level:"A1",category:"Phrases",hint:"parler"},
+  {fr:"Elle mange au café.",en:"She eats at the café.",level:"A1",category:"Phrases",hint:"manger"},
+  // aller / faire
+  {fr:"Ils vont au restaurant.",en:"They go to the restaurant.",level:"A2",category:"Phrases",hint:"aller"},
+  {fr:"Nous faisons une promenade.",en:"We take a walk.",level:"A2",category:"Phrases",hint:"faire"},
+  {fr:"Elle fait du vélo.",en:"She rides a bicycle.",level:"A2",category:"Phrases",hint:"faire"},
+  // vouloir / pouvoir
+  {fr:"Elle veut une robe rouge.",en:"She wants a red dress.",level:"A2",category:"Phrases",hint:"vouloir"},
+  {fr:"Il peut courir vite.",en:"He can run fast.",level:"A2",category:"Phrases",hint:"pouvoir"},
+  // savoir / devoir
+  {fr:"Je sais nager.",en:"I know how to swim.",level:"B1",category:"Phrases",hint:"savoir"},
+  {fr:"Il doit être fatigué.",en:"He must be tired.",level:"B1",category:"Phrases",hint:"devoir"},
+  {fr:"Nous devons décider.",en:"We must decide.",level:"B1",category:"Phrases",hint:"devoir"},
+  // croire / permettre
+  {fr:"Je crois que tu as raison.",en:"I think you're right.",level:"B2",category:"Phrases",hint:"croire"},
+  {fr:"Ils permettent une meilleure vie.",en:"They enable a better life.",level:"B2",category:"Phrases",hint:"permettre"},
+];
+
+
+// rename es→en in data
+const conjCards = conjugations.flatMap(v => v.rows.map(r => ({
+  fr: r.fr, es: r.en, level: v.level, category: "Conjugations", hint: `${v.verb} = ${v.meaning}`
+})));
+const allCards = [...vocab.map(c=>({...c,es:c.en})), ...conjCards, ...frases.map(c=>({...c,es:c.en}))];
+
+const levelColors = { A1:"#4ade80", A2:"#facc15", B1:"#fb923c", B2:"#f87171" };
+const categoryEmojis = {
+  Greetings:"👋",Family:"👨‍👩‍👧",Colors:"🎨",Body:"🫀",Places:"📍",
+  Conjugations:"🔤",Phrases:"💬",Weather:"🌤️",Food:"🍽️",Time:"⏰",
+  Adjectives:"✨",Transport:"🚆",Emotions:"❤️",Work:"💼",Society:"🏛️",
+  Abstract:"🧠",Media:"📰","Verbs B2":"📝",All:"▣"
+};
+
+// ── STATE ──
+let selectedLevel = "All";
+let selectedCat = "All";
+let showDir = "fr";
+let speakMode = false;
+let gameMode = "flashcard"; // flashcard | quiz
+let deck = [], deckIndex = 0, score = 0;
+let isFlipped = false, selectedOpt = null, options = [];
+let spokePassed = false, failCount = 0;
+let recognition = null, recognitionTimeout = null;
+let mobileRecognitionActive = false;
+let currentScreen = "feed";
+
+// ── STREAK ──
+let streak = 0;
+let maxStreak = 0;
+
+// ── ADAPTIVE DIFFICULTY ──
+// cardStats[fr] = { seen:0, wrong:0 }  — persisted in localStorage
+let cardStats = {};
+try { cardStats = JSON.parse(localStorage.getItem('cardStats')||'{}'); } catch(e){}
+function saveCardStats() { try{localStorage.setItem('cardStats',JSON.stringify(cardStats));}catch(e){} }
+function getWeight(card) {
+  const s = cardStats[card.fr];
+  if (!s || s.seen===0) return 1;
+  // More wrong → higher weight (max 5×)
+  const errorRate = s.wrong / s.seen;
+  return 1 + errorRate * 4;
+}
+function recordCard(card, wasCorrect) {
+  if (!cardStats[card.fr]) cardStats[card.fr] = {seen:0, wrong:0};
+  cardStats[card.fr].seen++;
+  if (!wasCorrect) cardStats[card.fr].wrong++;
+  saveCardStats();
+}
+
+// ── SESSION STATS (for result screen) ──
+// sessionLog[i] = { card, correct, timeMs }
+let sessionLog = [];
+let cardStartTime = 0;
+
+// ── SCREEN NAVIGATION ──
+function switchScreen(name) {
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById(name+"-screen").classList.add("active");
+  document.getElementById("nav-"+name).classList.add("active");
+  currentScreen = name;
+  if (name === "chat") buildScenarioList();
+  if (name === "verbs") { buildVerbLevelChips(); renderVerbList("All"); }
+  if (name === "listen") { lqInit(); }
+}
+
+// ── INIT ──
+function init() {
+  buildLevelChips();
+  buildCatChips();
+  buildVerbLevelChips();
+  renderVerbList("All");
+  startGame();
+}
+
+function buildLevelChips() {
+  const el = document.getElementById("level-chips");
+  el.innerHTML = "";
+  ["All","A1","A2","B1","B2"].forEach(l => {
+    const b = document.createElement("button");
+    b.className = "chip " + (l===selectedLevel?"active":"");
+    b.textContent = l;
+    if (l!=="All") b.setAttribute("data-level",l);
+    b.onclick = () => { selectedLevel=l; buildLevelChips(); buildCatChips(); startGame(); };
+    el.appendChild(b);
+  });
+}
+
+function buildCatChips() {
+  const filtered = allCards.filter(c=>selectedLevel==="All"||c.level===selectedLevel);
+  const cats = ["All", ...new Set(filtered.map(c=>c.category))];
+  if (!cats.includes(selectedCat)) selectedCat = "All";
+  const el = document.getElementById("cat-chips");
+  el.innerHTML = "";
+  cats.forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "chip " + (cat===selectedCat?"active":"");
+    b.textContent = (categoryEmojis[cat]||"") + " " + cat;
+    b.onclick = () => { selectedCat=cat; buildCatChips(); startGame(); };
+    el.appendChild(b);
+  });
+}
+
+function buildVerbLevelChips() {
+  const el = document.getElementById("verb-level-chips");
+  el.innerHTML = "";
+  ["All","A1","A2","B1","B2"].forEach(l => {
+    const b = document.createElement("button");
+    b.className = "chip " + (l==="All"?"active":"");
+    b.textContent = l;
+    b.onclick = (e) => {
+      el.querySelectorAll(".chip").forEach(c=>c.className="chip");
+      e.target.className="chip active";
+      renderVerbList(l);
+    };
+    el.appendChild(b);
+  });
+}
+
+function renderVerbList(lvl) {
+  const el = document.getElementById("verb-list");
+  el.innerHTML = "";
+  conjugations.filter(v=>lvl==="All"||v.level===lvl).forEach(v => {
+    const color = levelColors[v.level]||"#fff";
+    const row = document.createElement("div");
+    row.className = "verb-card";
+    row.innerHTML = `<div><strong style="font-size:1rem;">${v.verb}</strong><span style="color:#777;font-size:0.75rem;margin-left:8px;">${v.meaning}</span></div><span style="font-size:0.55rem;font-weight:900;padding:2px 7px;border-radius:2px;background:${color};color:#000;">${v.level}</span>`;
+    const wrap = document.createElement("div");
+    wrap.className = "verb-table-wrap";
+    const tbl = document.createElement("table");
+    tbl.className = "verb-table";
+    v.rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td style="color:#fff;font-weight:600;">${r.fr}</td><td style="color:#888;">${r.en}</td><td style="text-align:right"><button onclick="speakText('${r.fr.replace(/'/g,"\'")}','fr-FR');event.stopPropagation();" style="background:#1f1f1f;border:1px solid #2a2a2a;border-radius:3px;width:28px;height:28px;cursor:pointer;color:#888;">🔊</button></td>`;
+      tbl.appendChild(tr);
+    });
+    wrap.appendChild(tbl);
+    row.onclick = ()=>{ wrap.style.display = wrap.style.display==="none"?"block":"none"; };
+    el.appendChild(row);
+    el.appendChild(wrap);
+  });
+}
+
+// ── MODE / DIR / SPEAK ──
+let quizLength = 10; // default
+
+function setQuizLength(n) {
+  quizLength = n;
+  document.querySelectorAll('[data-ql]').forEach(b => b.classList.remove('active'));
+  document.getElementById('ql-'+n).classList.add('active');
+  if (gameMode === 'quiz') startGame();
+}
+
+function setMode(m) {
+  gameMode = m;
+  clearQuizTimer();
+  document.getElementById("mode-fc").className = "mode-btn " + (m==="flashcard"?"active":"");
+  document.getElementById("mode-qz").className = "mode-btn " + (m==="quiz"?"active":"");
+  document.getElementById("quiz-length-row").style.display = (m==="quiz") ? "flex" : "none";
+  startGame();
+}
+
+function toggleDir() {
+  showDir = showDir==="fr"?"es":"fr";
+  document.getElementById("mode-dir").textContent = showDir==="fr"?"FR→EN":"EN→FR";
+  startGame();
+}
+
+function toggleSpeakMode() {
+  speakMode = !speakMode;
+  const pill = document.getElementById("speak-pill");
+  const label = document.getElementById("speak-pill-label");
+  pill.className = "speak-pill" + (speakMode?" on":"");
+  label.textContent = speakMode?"ON":"Speak";
+  renderFeed();
+}
+
+// ── GAME ──
+function getFiltered() {
+  return allCards.filter(c=>{
+    const lvl = selectedLevel==="All"||c.level===selectedLevel;
+    const cat = selectedCat==="All"||c.category===selectedCat;
+    return lvl && cat;
+  });
+}
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+// Weighted shuffle — higher weight cards appear more often
+function weightedShuffle(arr) {
+  // Build pool: each card appears 1–5 times based on error rate
+  const pool = [];
+  arr.forEach(c => {
+    const w = Math.round(getWeight(c));
+    for (let i=0;i<w;i++) pool.push(c);
+  });
+  return shuffle(pool);
+}
+
+// ── SMART DISTRACTORS ──
+// Pick 3 wrong answers that are structurally similar to the correct one
+function generateOptions(correct, all) {
+  const others = all.filter(c => c.es !== correct.es);
+
+  // Score each candidate by similarity to correct answer
+  function similarity(a, b) {
+    let score = 0;
+    const aEn = a.es.toLowerCase(), bEn = b.es.toLowerCase();
+    const aFr = a.fr.toLowerCase(), bFr = b.fr.toLowerCase();
+
+    // Same level → harder to distinguish
+    if (a.level === b.level) score += 3;
+    // Same category → thematically related
+    if (a.category === b.category) score += 4;
+    // Same grammatical structure: both questions, both negations, same article
+    if (aFr.startsWith('?') === bFr.startsWith('?')) score += 1;
+    const aIsQ  = aFr.includes('?'), bIsQ  = bFr.includes('?');
+    if (aIsQ === bIsQ) score += 3;
+    const aIsNeg = /\bne\b|\bn'/.test(aFr), bIsNeg = /\bne\b|\bn'/.test(bFr);
+    if (aIsNeg === bIsNeg) score += 2;
+    // Same leading article/pronoun (je/tu/il/elle/nous…)
+    const firstWord = s => s.split(/\s+/)[0];
+    if (firstWord(aFr) === firstWord(bFr)) score += 3;
+    // Similar word length (within 40%)
+    const lenRatio = Math.min(aFr.length, bFr.length) / Math.max(aFr.length, bFr.length);
+    if (lenRatio > 0.6) score += 2;
+    // Shares a content word (makes it tricky)
+    const aWords = new Set(aFr.split(/\s+/).filter(w=>w.length>3));
+    const bWords = bFr.split(/\s+/).filter(w=>w.length>3);
+    if (bWords.some(w=>aWords.has(w))) score += 2;
+    // Same tense hint: verb ending patterns
+    const verbEnd = s => { const m=s.match(/\b\w+(ons|ez|ent|ais|ait|er|ir|re)\b/); return m?m[1]:''; };
+    if (verbEnd(aFr) === verbEnd(bFr) && verbEnd(aFr)) score += 2;
+
+    return score;
+  }
+
+  // Sort by similarity descending, pick top candidates, then shuffle for variety
+  const scored = others.map(c=>({c, s:similarity(correct,c)}));
+  scored.sort((a,b)=>b.s-a.s);
+  // Take top 8 then randomly pick 3 — keeps variety but stays hard
+  const pool = scored.slice(0, Math.min(8, scored.length)).map(x=>x.c);
+  const distractors = shuffle(pool).slice(0,3);
+
+  return shuffle([correct, ...distractors]);
+}
+
+function currentCard() { return deck[deckIndex]; }
+
+// ── QUIZ TIMER ──
+let quizTimer = null;
+let quizTimeLeft = 10;
+const QUIZ_SECONDS = 10;
+
+function startQuizTimer() {
+  clearQuizTimer();
+  quizTimeLeft = QUIZ_SECONDS;
+  updateTimerBar();
+  quizTimer = setInterval(() => {
+    quizTimeLeft--;
+    updateTimerBar();
+    if (quizTimeLeft <= 0) {
+      clearQuizTimer();
+      timeExpired();
+    }
+  }, 1000);
+}
+
+function clearQuizTimer() {
+  if (quizTimer) { clearInterval(quizTimer); quizTimer = null; }
+}
+
+function updateTimerBar() {
+  const bar = document.getElementById('quiz-timer-bar');
+  if (!bar) return;
+  const pct = (quizTimeLeft / QUIZ_SECONDS) * 100;
+  bar.style.width = pct + '%';
+  // Color shifts: green → yellow → red
+  bar.style.background = quizTimeLeft > 6 ? '#4ade80' : quizTimeLeft > 3 ? '#facc15' : '#f87171';
+  const label = document.getElementById('quiz-timer-label');
+  if (label) { label.textContent = quizTimeLeft + 's'; label.style.color = quizTimeLeft <= 3 ? '#f87171' : '#555'; }
+}
+
+function timeExpired() {
+  if (selectedOpt !== null) return;
+  selectedOpt = -1;
+  const card = currentCard();
+  const elapsed = Date.now() - cardStartTime;
+  recordCard(card, false);
+  sessionLog.push({card, correct:false, timeMs:elapsed, timedOut:true});
+  streak = 0;
+  playBuzzSound(); vibrateWrong();
+  renderQuizOptions(card, showDir==='fr', false);
+  setTimeout(nextCard, 1800);
+}
+
+function startGame() {
+  const filtered = getFiltered();
+  if (!filtered.length) return;
+  clearQuizTimer();
+  let pool = weightedShuffle(filtered);
+  if (gameMode === 'quiz') pool = pool.slice(0, quizLength);
+  deck = pool;
+  deckIndex = 0; score = 0; isFlipped = false; selectedOpt = null;
+  spokePassed = false; failCount = 0; mobileRecognitionActive = false;
+  streak = 0; maxStreak = 0;
+  sessionLog = [];
+  cardStartTime = Date.now();
+  if (gameMode==="quiz") options = generateOptions(deck[0], filtered);
+  updateStats();
+  renderFeed();
+  autoSpeak();
+  if (gameMode==="quiz") startQuizTimer();
+}
+
+function restartGame() {
+  document.getElementById("result-overlay").classList.remove("show");
+  startGame();
+}
+
+function updateStats() {
+  document.getElementById("fc-score").textContent = score;
+  document.getElementById("fc-progress-txt").textContent = deck.length ? `${deckIndex+1} / ${deck.length}` : "";
+  const pct = deck.length ? (deckIndex/deck.length)*100 : 0;
+  const bar = document.getElementById("fc-bar");
+  bar.style.width = pct+"%";
+  bar.style.background = deck.length ? (levelColors[deck[deckIndex]?.level]||"#fff") : "#fff";
+
+  // Streak indicator with pop animation
+  const streakEl = document.getElementById("streak-display");
+  if (streakEl) {
+    if (streak >= 3) {
+      const emoji = streak >= 15 ? '🔥🔥🔥' : streak >= 10 ? '🔥🔥' : '🔥';
+      const col = streak>=15?'#f87171':streak>=10?'#fb923c':streak>=5?'#facc15':'#fff';
+      streakEl.textContent = `${emoji} ${streak}`;
+      streakEl.style.color = col;
+      streakEl.style.opacity = '1';
+      streakEl.style.fontWeight = '900';
+      // Re-trigger animation
+      streakEl.classList.remove('streak-pop');
+      void streakEl.offsetWidth; // reflow
+      streakEl.classList.add('streak-pop');
+    } else {
+      streakEl.textContent = '';
+      streakEl.style.opacity = '0';
+    }
+  }
+}
+
+function nextCard() {
+  if (speakMode && !spokePassed) return;
+  clearQuizTimer();
+  if (recognition) { try{recognition.abort();}catch(e){} recognition=null; }
+  deckIndex++;
+  if (deckIndex>=deck.length) { showResult(); return; }
+  isFlipped=false; selectedOpt=null; spokePassed=false; failCount=0; mobileRecognitionActive=false;
+  cardStartTime = Date.now();
+  const filtered = getFiltered();
+  if (gameMode==="quiz") options = generateOptions(deck[deckIndex], filtered);
+  updateStats();
+  renderFeed();
+  autoSpeak();
+  if (gameMode==="quiz") startQuizTimer();
+  setTimeout(()=>{
+    const feed = document.getElementById("card-feed");
+    feed.scrollTo({top:0,behavior:"smooth"});
+  }, 50);
+}
+
+// ── FEED RENDER ──
+function renderFeed() {
+  const feed = document.getElementById("card-feed");
+  if (!deck.length) { feed.innerHTML = '<div style="padding:32px;text-align:center;color:#666;font-size:0.8rem;letter-spacing:2px;">NO CARDS</div>'; return; }
+  const card = currentCard();
+  const color = levelColors[card.level]||"#fff";
+  const front = showDir==="fr";
+
+  if (gameMode==="flashcard") {
+    renderFlashcard(feed, card, front, color);
+  } else {
+    renderQuiz(feed, card, front, color);
+  }
+}
+
+function renderFlashcard(feed, card, front, color) {
+  const locked = speakMode && !spokePassed;
+  const showAnswer = isFlipped;
+  const frontWord  = front ? card.fr : card.es;
+  const backWord   = front ? card.es : card.fr;
+  const frontLabel = front ? "FRANÇAIS" : "ENGLISH";
+  const backLabel  = front ? "ENGLISH"  : "FRANÇAIS";
+  const fsize = w => w.length>30?'1.4rem':w.length>18?'1.8rem':'2.2rem';
+
+  feed.innerHTML = `
+    <div class="feed-card">
+
+      <div class="flip-scene" onclick="${!showAnswer?'doFlip()':''}">
+        <div class="flip-card-inner${showAnswer?' flipped':''}" id="flip-inner">
+
+          <!-- FRONT FACE -->
+          <div class="flip-face front">
+            <div style="position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;">
+              <span style="font-size:1rem;">${categoryEmojis[card.category]||'📚'}</span>
+              <span style="font-size:0.58rem;font-weight:700;color:#555;letter-spacing:2px;text-transform:uppercase;">${card.category}</span>
+              ${card.hint?`<span style="font-size:0.55rem;color:#444;"> · ${card.hint}</span>`:''}
+            </div>
+            <div class="feed-level-badge badge-${card.level}" style="position:absolute;top:12px;right:12px;">${card.level}</div>
+            <button onclick="event.stopPropagation();speakText('${card.fr.replace(/'/g,"\\'")}','fr-FR')"
+              style="position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,0.06);border:1px solid #2a2a2a;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:0.9rem;color:#888;display:flex;align-items:center;justify-content:center;">🔊</button>
+            <div class="feed-face-label">${frontLabel}</div>
+            <div class="feed-face-word" style="font-size:${fsize(frontWord)};">${frontWord}</div>
+            <div class="feed-tap-hint" style="margin-top:12px;">tap to flip ↻</div>
+          </div>
+
+          <!-- BACK FACE -->
+          <div class="flip-face back">
+            <div style="position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;">
+              <span style="font-size:1rem;">${categoryEmojis[card.category]||'📚'}</span>
+              <span style="font-size:0.58rem;font-weight:700;color:#555;letter-spacing:2px;text-transform:uppercase;">${card.category}</span>
+            </div>
+            <div class="feed-level-badge badge-${card.level}" style="position:absolute;top:12px;right:12px;">${card.level}</div>
+            <button onclick="event.stopPropagation();speakText('${card.fr.replace(/'/g,"\\'")}','fr-FR')"
+              style="position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,0.06);border:1px solid #333;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:0.9rem;color:#888;display:flex;align-items:center;justify-content:center;">🔊</button>
+            <div class="feed-face-label" style="color:#888;">${backLabel}</div>
+            <div class="feed-face-word" style="font-size:${fsize(backWord)};color:#fff;">${backWord}</div>
+            ${card.hint?`<div style="font-size:0.7rem;color:#555;margin-top:8px;letter-spacing:1px;">${card.hint}</div>`:''}
+          </div>
+
+        </div>
+      </div>
+
+      ${showAnswer?`
+        <div class="feed-flip-btns" style="margin-top:10px;flex-shrink:0;">
+          <button class="flip-btn" style="background:#1a1a1a;color:#777;border:1px solid #2a2a2a;"
+            onclick="fcAnswer(false)" ${locked?'disabled':''}>✗ Review</button>
+          <button class="flip-btn" style="background:#fff;color:#000;"
+            onclick="fcAnswer(true)"  ${locked?'disabled':''}>✓ Got it</button>
+        </div>
+      `:''}
+
+      ${showAnswer && speakMode?`<div class="feed-speak-box" id="fc-speak-box" style="margin-top:8px;flex-shrink:0;"></div>`:''}
+
+    </div>
+  `;
+
+  if (showAnswer && speakMode) renderSpeakBox("fc-speak-box", card.fr);
+}
+
+// Trigger the CSS flip animation, then let state catch up
+function doFlip() {
+  if (isFlipped) return;
+  const inner = document.getElementById('flip-inner');
+  if (inner) {
+    inner.classList.add('flipped');
+    // Disable click during animation
+    inner.parentElement.onclick = null;
+    setTimeout(()=>{ isFlipped=true; renderFeed(); }, 460);
+  } else {
+    isFlipped=true; renderFeed();
+  }
+}
+
+function fcAnswer(correct) {
+  const card = currentCard();
+  const elapsed = Date.now() - cardStartTime;
+  recordCard(card, correct);
+  sessionLog.push({card, correct, timeMs: elapsed});
+  if (correct) { score++; streak++; maxStreak=Math.max(maxStreak,streak); playBellSound(); }
+  else { streak=0; playBuzzSound(); vibrateWrong(); }
+  updateStats();
+  nextCard();
+}
+
+function renderQuiz(feed, card, front, color) {
+  const locked = speakMode && !spokePassed;
+  feed.innerHTML = `
+    <div class="feed-card">
+
+      <!-- QUESTION CARD: compact, fixed height -->
+      <div style="
+        background:var(--card);border:1px solid var(--border2);border-radius:12px;
+        position:relative;flex-shrink:0;overflow:hidden;
+      ">
+        <!-- top meta row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:1rem;">${categoryEmojis[card.category]||"📚"}</span>
+            <span style="font-size:0.58rem;font-weight:700;color:#555;letter-spacing:2px;text-transform:uppercase;">${card.category}</span>
+            ${card.hint?`<span style="font-size:0.55rem;color:#444;"> · ${card.hint}</span>`:""}
+          </div>
+          <div class="feed-level-badge badge-${card.level}">${card.level}</div>
+        </div>
+
+        <!-- word -->
+        <div style="text-align:center;padding:14px 16px 10px;">
+          <div style="font-size:0.55rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">${front?"FRANÇAIS":"ENGLISH"}</div>
+          <div style="font-size:${card.fr.length>30?'1.4rem':card.fr.length>18?'1.7rem':'2rem'};font-weight:900;line-height:1.2;letter-spacing:-0.5px;">${front?card.fr:card.es}</div>
+        </div>
+
+        <!-- bottom row: audio + timer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px 8px;">
+          <span id="quiz-timer-label" style="font-size:0.62rem;color:#555;letter-spacing:1px;">${QUIZ_SECONDS}s</span>
+          <button onclick="speakText('${card.fr.replace(/'/g,"\\'")}','fr-FR')"
+            style="background:rgba(255,255,255,0.06);border:1px solid #2a2a2a;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:0.9rem;color:#888;display:flex;align-items:center;justify-content:center;">🔊</button>
+        </div>
+
+        <!-- timer bar -->
+        <div style="height:3px;background:#1a1a1a;overflow:hidden;">
+          <div id="quiz-timer-bar" style="height:100%;width:100%;background:#4ade80;transition:background 0.5s;"></div>
+        </div>
+      </div>
+
+      <!-- OPTIONS: fill remaining space -->
+      <div id="quiz-options-wrap" style="margin-top:8px;"></div>
+
+      ${speakMode?`<div class="feed-speak-box" id="qz-speak-box" style="margin-top:8px;flex-shrink:0;"></div>`:""}
+
+    </div>
+  `;
+
+  renderQuizOptions(card, front, locked);
+  if (speakMode) renderSpeakBox("qz-speak-box", card.fr);
+}
+
+function renderQuizOptions(card, front, locked) {
+  const wrap = document.getElementById("quiz-options-wrap");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  const timedOut = selectedOpt === -1;
+
+  options.forEach((opt,i) => {
+    const isCorrect = opt.es===card.es;
+    const isSelected = selectedOpt===i;
+    const answered = selectedOpt !== null;
+
+    let bg="var(--card)", border="1px solid var(--border2)", col="#ccc", icon="";
+
+    if (answered) {
+      if (isCorrect) {
+        bg="rgba(74,222,128,0.12)"; border="1px solid #4ade80"; col="#4ade80"; icon="✓";
+      } else if (isSelected) {
+        bg="rgba(248,113,113,0.12)"; border="1px solid #f87171"; col="#f87171"; icon="✗";
+      } else {
+        col="#3a3a3a"; // dim unchosen wrong answers
+      }
+    }
+    if (locked && !answered) col="#2a2a2a";
+
+    const btn = document.createElement("button");
+    btn.className = "quiz-option";
+    btn.style.cssText = `background:${bg};border:${border};color:${col};`;
+    btn.disabled = locked || answered;
+
+    const text = front ? opt.es : opt.fr;
+    btn.innerHTML = `
+      <span style="flex:1;text-align:left;line-height:1.4;">${text}</span>
+      ${answered && icon ? `<span style="font-size:1rem;margin-left:10px;">${icon}</span>` : ""}
+      ${timedOut && isCorrect && !isSelected ? `<span style="font-size:0.65rem;color:#4ade80;margin-left:8px;letter-spacing:1px;">← CORRECT</span>` : ""}
+    `;
+    btn.onclick = ()=>handleAnswer(i);
+    wrap.appendChild(btn);
+  });
+
+  // If timed out, show a message
+  if (timedOut) {
+    const msg = document.createElement("div");
+    msg.style.cssText = "text-align:center;color:#f87171;font-size:0.72rem;letter-spacing:2px;margin-top:6px;text-transform:uppercase;";
+    msg.textContent = "⏱ Time's up!";
+    wrap.appendChild(msg);
+  }
+}
+
+function handleAnswer(idx) {
+  if (selectedOpt!==null) return;
+  if (speakMode && !spokePassed) return;
+  clearQuizTimer();
+  selectedOpt=idx;
+  const card = currentCard();
+  const correct = options[idx].es===card.es;
+  const elapsed = Date.now() - cardStartTime;
+  // Record for adaptive + session
+  recordCard(card, correct);
+  sessionLog.push({card, correct, timeMs: elapsed});
+  if (correct) {
+    score++; streak++; maxStreak=Math.max(maxStreak,streak);
+    playBellSound();
+  } else {
+    streak=0; playBuzzSound(); vibrateWrong();
+  }
+  updateStats();
+  renderQuizOptions(card, showDir==="fr", false);
+  setTimeout(nextCard, 1200);
+}
+
+function flipCard() {
+  if (isFlipped) return;
+  isFlipped = true;
+  renderFeed();
+}
+
+function showResult() {
+  clearQuizTimer();
+  const total   = sessionLog.length || deck.length;
+  const correct = sessionLog.filter(s=>s.correct).length;
+  const pct     = total>0 ? correct/total : 0;
+
+  // ── PER-LEVEL BREAKDOWN ──
+  const levels = ['A1','A2','B1','B2'];
+  const levelStats = {};
+  levels.forEach(l=>{ levelStats[l]={correct:0,total:0}; });
+  sessionLog.forEach(s=>{
+    const l = s.card.level;
+    if (levelStats[l]) { levelStats[l].total++; if(s.correct) levelStats[l].correct++; }
+  });
+
+  // ── MISSED WORDS (this session) ──
+  const wrongMap = {};
+  sessionLog.filter(s=>!s.correct&&!s.timedOut).forEach(s=>{
+    const k=s.card.fr;
+    if(!wrongMap[k]) wrongMap[k]={card:s.card,count:0};
+    wrongMap[k].count++;
+  });
+  const missedCards = Object.values(wrongMap).sort((a,b)=>b.count-a.count).slice(0,6);
+
+  // ── ALL-TIME HARDEST ──
+  const allTimeHardest = Object.entries(cardStats)
+    .filter(([,v])=>v.seen>=2&&v.wrong>0)
+    .map(([k,v])=>({fr:k,rate:v.wrong/v.seen,seen:v.seen,wrong:v.wrong}))
+    .sort((a,b)=>b.rate-a.rate).slice(0,5);
+
+  // ── VISUALS ──
+  const trophy = pct>=0.9?'🏆':pct>=0.7?'🥇':pct>=0.5?'🥈':'💪';
+  const msg    = pct>=0.9?'Parfait !':pct>=0.7?'Très bien !':pct>=0.5?'Pas mal !':'Continue !';
+  const pctNum = Math.round(pct*100);
+  const ringColor = pct>=0.7?'#4ade80':pct>=0.5?'#facc15':'#f87171';
+
+  const levelBarsHTML = levels.map(l=>{
+    const s=levelStats[l]; if(!s.total) return '';
+    const lp=Math.round(s.correct/s.total*100);
+    const c=levelColors[l];
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+        <span style="font-size:0.65rem;font-weight:900;padding:2px 9px;border-radius:3px;background:${c};color:#000;">${l}</span>
+        <span style="font-size:0.78rem;color:#aaa;">${s.correct}<span style="color:#444;">/${s.total}</span> &nbsp;<strong style="color:#fff;">${lp}%</strong></span>
+      </div>
+      <div style="height:7px;background:#1a1a1a;border-radius:4px;overflow:hidden;">
+        <div class="stat-bar-fill" style="height:100%;width:${lp}%;background:${c};border-radius:4px;animation-duration:${0.5+lp/100*0.5}s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const missedHTML = missedCards.length ? `
+    <div style="margin-top:22px;">
+      <div style="font-size:0.58rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">⚡ Repasar estas palabras</div>
+      ${missedCards.map(x=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 13px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:6px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:1rem;font-weight:700;color:#fff;">${x.card.fr}</div>
+            <div style="font-size:0.72rem;color:#666;margin-top:2px;">${x.card.es}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${x.count>1?`<span style="font-size:0.65rem;color:#f87171;font-weight:700;">✗ ×${x.count}</span>`:'<span style="font-size:0.65rem;color:#f87171;">✗</span>'}
+            <button onclick="speakText('${x.card.fr.replace(/'/g,"\\'")}','fr-FR')" style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#666;font-size:0.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🔊</button>
+          </div>
+        </div>`).join('')}
+    </div>` : '';
+
+  const hardestHTML = allTimeHardest.length ? `
+    <div style="margin-top:22px;">
+      <div style="font-size:0.58rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">📊 Más difíciles (histórico)</div>
+      ${allTimeHardest.map(x=>{
+        const rp=Math.round(x.rate*100);
+        const c=rp>60?'#f87171':rp>35?'#fb923c':'#facc15';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:9px 13px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:6px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.95rem;font-weight:700;color:#fff;">${x.fr}</div>
+            <div style="font-size:0.62rem;color:#444;margin-top:1px;">${x.seen} intentos</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:0.9rem;font-weight:900;color:${c};">${rp}%</div>
+            <div style="font-size:0.58rem;color:#444;">error</div>
+          </div>
+        </div>`;}).join('')}
+    </div>` : '';
+
+  const streakBadge = maxStreak>=3 ? `
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#1a1a0a;border:1px solid #facc1540;border-radius:20px;padding:5px 14px;margin-top:10px;">
+      <span style="font-size:1rem;">🔥</span>
+      <span style="font-size:0.78rem;color:#facc15;font-weight:700;">Best streak: ${maxStreak}</span>
+    </div>` : '';
+
+  document.getElementById("result-overlay").innerHTML = `
+    <div style="width:100%;max-width:440px;padding:24px 20px 32px;">
+
+      <!-- HEADER -->
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:3.2rem;margin-bottom:6px;">${trophy}</div>
+        <!-- Big ring score -->
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:100px;height:100px;border-radius:50%;border:4px solid ${ringColor};background:${ringColor}18;margin-bottom:8px;flex-direction:column;">
+          <div style="font-size:1.8rem;font-weight:900;letter-spacing:-1px;line-height:1;">${pctNum}%</div>
+          <div style="font-size:0.6rem;color:#888;letter-spacing:1px;">${correct}/${total}</div>
+        </div>
+        <div style="font-size:0.78rem;color:#888;letter-spacing:3px;text-transform:uppercase;margin-top:2px;">${msg}</div>
+        ${streakBadge}
+      </div>
+
+      <!-- LEVEL BREAKDOWN -->
+      <div style="font-size:0.58rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">Por nivel</div>
+      ${levelBarsHTML || '<div style="font-size:0.75rem;color:#444;margin-bottom:16px;">No hay datos de nivel aún.</div>'}
+
+      ${missedHTML}
+      ${hardestHTML}
+
+      <!-- ACTIONS -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:28px;">
+        <button onclick="restartGame()" style="padding:15px;border-radius:12px;border:none;background:#fff;color:#000;font-weight:900;font-size:0.85rem;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;">↺ Jugar de nuevo</button>
+        <button onclick="document.getElementById('result-overlay').classList.remove('show')" style="padding:14px;border-radius:12px;border:1px solid #222;background:transparent;color:#777;font-size:0.85rem;cursor:pointer;font-family:inherit;letter-spacing:1px;">← Volver</button>
+        ${allTimeHardest.length?`<button onclick="resetStats()" style="padding:10px;border-radius:12px;border:1px solid #1a1a1a;background:transparent;color:#333;font-size:0.65rem;cursor:pointer;font-family:inherit;letter-spacing:1px;margin-top:4px;">🗑 Borrar estadísticas</button>`:''}
+      </div>
+
+    </div>
+  `;
+  document.getElementById("result-overlay").classList.add("show");
+}
+
+function resetStats() {
+  if (!confirm('Reset all progress stats?')) return;
+  cardStats = {}; saveCardStats();
+  document.querySelector('#result-overlay [onclick*="resetStats"]')?.remove();
+}
+
+// Shared AudioContext — one instance avoids pops/glitches on Android
+let sharedAudioCtx = null;
+function getAudioCtx() {
+  if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+    sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (sharedAudioCtx.state === "suspended") sharedAudioCtx.resume();
+  return sharedAudioCtx;
+}
+
+// ─── SPEECH RECOGNITION ────────────────────────────────────────────────────
+function resetMicUI(targetFr, containerId) {
+  const s = document.getElementById("mic-status-text-"+containerId);
+  if (s) s.textContent = "Click 🎤 to try again";
+  if (recognitionTimeout) { clearTimeout(recognitionTimeout); recognitionTimeout=null; }
+}
+
+function startRecognition(targetFr, containerId) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    const r=document.getElementById("speak-result-"+containerId);
+    if(r) r.innerHTML=`<div style="color:#f87171;font-size:0.75rem;">Use Chrome for speech recognition.</div>`;
+    return;
+  }
+  if (recognition) { try{recognition.abort();}catch(e){} recognition=null; }
+  if (recognitionTimeout) { clearTimeout(recognitionTimeout); recognitionTimeout=null; }
+
+  recognition = new SR();
+  recognition.lang = "fr-FR";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 5;
+
+  const resEl = document.getElementById("speak-result-"+containerId);
+  const statusEl = document.getElementById("mic-status-text-"+containerId);
+  const compareEl = document.getElementById("phonetic-compare-"+containerId);
+
+  if (statusEl) statusEl.textContent = "🔴 Listening...";
+
+  recognitionTimeout = setTimeout(()=>{
+    if (recognition) { try{recognition.abort();}catch(e){} recognition=null; }
+    if (statusEl) statusEl.textContent="⏱ Timed out — try again";
+    setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, 800);
+  }, 7000);
+
+  recognition.onresult = (e) => {
+    clearTimeout(recognitionTimeout); recognitionTimeout=null;
+
+    const alternatives = Array.from(e.results[0]).map(r=>r.transcript.trim());
+    const targetLen = normalize(targetFr).length;
+    const valid = alternatives.filter(t=>t.length >= Math.max(2, targetLen*0.35));
+
+    if (valid.length===0) {
+      if (statusEl) statusEl.textContent="🔇 Noise — speak clearly in French!";
+      setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, 1000);
+      return;
+    }
+
+    // Pick best-scoring alternative
+    const scored = valid.map(t=>({t, score:phoneticSimilarity(t,targetFr)}));
+    scored.sort((a,b)=>b.score-a.score);
+    const best = scored[0].t, similarity = scored[0].score;
+
+    // Show what was heard always (helps debug)
+    if (resEl) resEl.innerHTML=`<div style="font-size:0.72rem;color:#888;margin-bottom:4px;">Heard: "<span style="color:#aaa;">${best}</span>" · <span style="color:#777;">${Math.round(similarity*100)}% match</span></div>`;
+
+    if (isNoise(best, targetFr)) {
+      if (statusEl) statusEl.textContent="🔇 Background noise — say it in French!";
+      setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, 1000);
+      return;
+    }
+
+    if (similarity >= 0.68) {
+      failCount=0; playBellSound(); spokePassed=true;
+      if (compareEl) compareEl.innerHTML="";
+      if (resEl) resEl.innerHTML=`<div style="color:#4ade80;font-size:0.8rem;font-weight:700;letter-spacing:1px;">✓ PARFAIT!</div>`;
+      renderCard(lastMode);
+    } else {
+      failCount++;
+      playBuzzSound(); vibrateWrong();
+      if (compareEl) compareEl.innerHTML = phoneticCompare(best, targetFr);
+      if (statusEl) statusEl.textContent=`✗ Try again (attempt ${failCount})`;
+
+      if (failCount>=3) {
+        if (statusEl) statusEl.textContent=`🐢 Listen then repeat (attempt ${failCount})`;
+        setTimeout(()=>speakSlow(targetFr), 200);
+        const skipEl=document.getElementById("skip-hint-"+containerId);
+        if (skipEl) skipEl.style.display="block";
+      }
+      setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, failCount>=3?3000:1500);
+    }
+  };
+
+  recognition.onerror = (e) => {
+    clearTimeout(recognitionTimeout); recognitionTimeout=null;
+    if (e.error==="no-speech") {
+      if (statusEl) statusEl.textContent="🔇 Nothing heard — speak louder!";
+      setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, 1000);
+    } else if (e.error==="not-allowed") {
+      if (resEl) resEl.innerHTML=`<div style="color:#f87171;font-size:0.75rem;">🚫 Mic blocked. Click 🔒 in Chrome's address bar.</div>`;
+    } else if (e.error==="aborted") {
+      // intentional
+    } else {
+      if (statusEl) statusEl.textContent=`⚠ ${e.error} — retrying...`;
+      setTimeout(()=>{ if(!spokePassed) startRecognition(targetFr,containerId); }, 1000);
+    }
+  };
+
+  recognition.onend = () => {
+    clearTimeout(recognitionTimeout); recognitionTimeout=null;
+    mobileRecognitionActive=false;
+    const mBtn=document.getElementById("mobile-mic-btn-"+containerId);
+    if (mBtn) { mBtn.textContent="🎤 TAP TO SPEAK"; mBtn.style.background="linear-gradient(135deg,#10b981,#059669)"; }
+    recognition=null;
+  };
+
+  try { recognition.start(); }
+  catch(e) {
+    if (resEl) resEl.innerHTML=`<div style="font-size:0.75rem;color:#888;">⚠ Could not start mic.</div>`;
+  }
+}
+
+// ─── AUDIO / SOUNDS ────────────────────────────────────────────────────────
+// ── QUIZ SOUNDS ──
+function playBellSound() {
+  try {
+    const ctx = getAudioCtx();
+    // Soft bell: fundamental + harmonics, quick decay
+    const freqs = [1046, 1318, 1568]; // C6 E6 G6 — major chord chime
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.06;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18 - i*0.04, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+      osc.start(t); osc.stop(t + 1.2);
+    });
+  } catch(e){}
+}
+
+function playBuzzSound() {
+  try {
+    const ctx = getAudioCtx();
+    // Harsh descending buzz — wrong answer
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const dist = ctx.createWaveShaper();
+    // soft distortion curve
+    const curve = new Float32Array(256);
+    for (let i=0;i<256;i++) { const x=i/128-1; curve[i]=x<0?-0.8:0.8; }
+    dist.curve = curve;
+    osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(280, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(140, ctx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.45);
+  } catch(e){}
+}
+
+function vibrateWrong() {
+  try {
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80]); // double pulse
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════════════════
+// VOICE ENGINE — ElevenLabs (human) + Browser TTS fallback
+// ══════════════════════════════════════════════════════
+
+// ── PERSONAS (used for browser TTS variety) ──
+const voicePersonas = [
+  { label:"young woman", rate: 1.08, pitch: 1.7 },
+  { label:"young man",   rate: 1.05, pitch: 0.6 },
+  { label:"older woman", rate: 0.90, pitch: 1.5 },
+  { label:"older man",   rate: 0.85, pitch: 0.4 },
+  { label:"teenager",    rate: 1.18, pitch: 1.9 },
+  { label:"professor",   rate: 0.94, pitch: 1.0 },
+];
+let currentPersona = voicePersonas[0];
+function pickRandomPersona() {
+  currentPersona = voicePersonas[Math.floor(Math.random() * voicePersonas.length)];
+}
+
+// micro-pauses trick for browser TTS
+function humanizeText(text) {
+  return text
+    .replace(/\b(et|ou|mais|donc|car|ni|or)\b/g, '$1,')
+    .replace(/([.!?])\s+/g, '$1  ');
+}
+
+// ── ELEVENLABS CONFIG ──
+let voiceEngine   = localStorage.getItem('voiceEngine')   || 'browser';
+let elevenKey     = localStorage.getItem('elevenKey')     || '';
+let elevenVoiceId = localStorage.getItem('elevenVoiceId') || 'TX3LPaxmHKxFdv7VOQHJ';
+
+const ELEVEN_VOICES = [
+  { id:"TX3LPaxmHKxFdv7VOQHJ", name:"Liam",    desc:"Young man, clear"        },
+  { id:"AZnzlk1XvdvUeBnXmlld", name:"Domi",    desc:"Young woman, expressive" },
+  { id:"EXAVITQu4vr4xnSDxMaL", name:"Bella",   desc:"Warm woman, natural"     },
+  { id:"ErXwobaYiN019PkySvjV",  name:"Antoni",  desc:"Well-rounded male"       },
+  { id:"MF3mGyEYCl7XYWbV9V6O",  name:"Elli",    desc:"Bright young woman"      },
+  { id:"TxGEqnHWrfWFTfGW9XjX",  name:"Josh",    desc:"Deep male, calm"         },
+  { id:"pNInz6obpgDQGcFmaJgB",  name:"Adam",    desc:"Neutral male, clear"     },
+  { id:"yoZ06aMxZJJ28mfd3POQ",  name:"Sam",     desc:"Raspy, mature"           },
+];
+
+// ── SETTINGS UI ──
+function openSettings() {
+  document.getElementById('settings-overlay').style.display='block';
+  refreshSettingsUI();
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display='none';
+}
+function refreshSettingsUI() {
+  const isBrowser = voiceEngine==='browser';
+  const bb=document.getElementById('voice-browser-btn'), eb=document.getElementById('voice-eleven-btn');
+  bb.style.borderColor=isBrowser?'#4ade80':'#333'; bb.style.color=isBrowser?'#4ade80':'#666'; bb.style.background=isBrowser?'rgba(74,222,128,0.08)':'transparent';
+  eb.style.borderColor=!isBrowser?'#4ade80':'#333'; eb.style.color=!isBrowser?'#4ade80':'#666'; eb.style.background=!isBrowser?'rgba(74,222,128,0.08)':'transparent';
+  document.getElementById('eleven-setup').style.display=!isBrowser?'block':'none';
+  if(elevenKey) { document.getElementById('eleven-key-input').value=elevenKey; renderVoiceList(); }
+  updateVoiceIndicator();
+}
+function setVoiceEngine(e) { voiceEngine=e; localStorage.setItem('voiceEngine',e); refreshSettingsUI(); }
+function onKeyInput() { document.getElementById('eleven-status').textContent=''; }
+
+async function saveElevenKey() {
+  const key=document.getElementById('eleven-key-input').value.trim();
+  if(!key) return;
+  elevenKey=key; localStorage.setItem('elevenKey',key);
+  const st=document.getElementById('eleven-status');
+  st.textContent='⏳ Testing…'; st.style.color='#888';
+  const ok=await elevenSpeak('Bonjour !', ELEVEN_VOICES[0].id, true);
+  if(ok) {
+    st.textContent='✓ Connected! Pick a voice below.'; st.style.color='#4ade80';
+    if(!elevenVoiceId) elevenVoiceId=ELEVEN_VOICES[0].id;
+    renderVoiceList(); updateVoiceIndicator();
+  } else {
+    st.textContent='✗ Invalid key — check and retry.'; st.style.color='#f87171';
+  }
+}
+
+function renderVoiceList() {
+  const section=document.getElementById('eleven-voices-section');
+  const el=document.getElementById('voice-list');
+  if(!elevenKey){section.style.display='none';return;}
+  section.style.display='block'; el.innerHTML='';
+  ELEVEN_VOICES.forEach(v=>{
+    const active=elevenVoiceId===v.id;
+    const btn=document.createElement('button');
+    btn.style.cssText=`width:100%;padding:10px 14px;border-radius:8px;text-align:left;border:1px solid ${active?'#4ade80':'#222'};background:${active?'rgba(74,222,128,0.07)':'transparent'};color:${active?'#4ade80':'#888'};font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;`;
+    btn.innerHTML=`<div><span style="font-weight:700;font-size:0.82rem;">${v.name}</span><span style="font-size:0.68rem;color:#555;margin-left:8px;">${v.desc}</span></div><button onclick="previewVoice('${v.id}');event.stopPropagation();" style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;padding:3px 10px;font-size:0.65rem;color:#666;cursor:pointer;font-family:inherit;">▶</button>`;
+    btn.onclick=()=>{ elevenVoiceId=v.id; localStorage.setItem('elevenVoiceId',v.id); renderVoiceList(); updateVoiceIndicator(); };
+    el.appendChild(btn);
+  });
+}
+
+function previewVoice(id) { elevenSpeak('Bonjour, comment allez-vous ?', id, false); }
+
+function updateVoiceIndicator() {
+  const el=document.getElementById('voice-indicator');
+  if(!el) return;
+  if(voiceEngine==='elevenlabs'&&elevenKey){ const v=ELEVEN_VOICES.find(v=>v.id===elevenVoiceId); el.textContent='✨'+(v?' '+v.name:''); el.style.color='#4ade80'; }
+  else { el.textContent=''; }
+}
+
+// ── ELEVENLABS API ──
+async function elevenSpeak(text, voiceId, testOnly=false) {
+  if(!elevenKey||!voiceId) return false;
+  try {
+    const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,{
+      method:'POST',
+      headers:{'xi-api-key':elevenKey,'Content-Type':'application/json'},
+      body:JSON.stringify({text,model_id:'eleven_multilingual_v2',voice_settings:{stability:0.45,similarity_boost:0.80,style:0.25,use_speaker_boost:true}})
+    });
+    if(!res.ok) return false;
+    if(testOnly){await res.arrayBuffer();return true;}
+    const buf=await res.arrayBuffer();
+    const ctx=getAudioCtx();
+    const decoded=await ctx.decodeAudioData(buf);
+    const src=ctx.createBufferSource();
+    src.buffer=decoded; src.connect(ctx.destination); src.start();
+    return true;
+  } catch(e){return false;}
+}
+
+// ── BROWSER TTS ──
+let _frVoices=[];
+function loadVoices() {
+  const all=window.speechSynthesis?.getVoices()||[];
+  _frVoices=all.filter(v=>v.lang.startsWith('fr'));
+  _frVoices.sort((a,b)=>{ const q=v=>/enhanced|premium|neural|natural|wavenet/i.test(v.name)?0:1; return q(a)-q(b); });
+}
+if(window.speechSynthesis){ window.speechSynthesis.onvoiceschanged=loadVoices; loadVoices(); }
+
+function browserSpeak(text,lang) {
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(humanizeText(text));
+  utt.lang=lang||'fr-FR';
+  utt.rate=currentPersona.rate+(Math.random()-0.5)*0.08;
+  utt.pitch=currentPersona.pitch+(Math.random()-0.5)*0.12;
+  const pool=_frVoices.length?_frVoices:(window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('fr')));
+  if(pool.length){
+    const wF=/woman|teenager/.test(currentPersona.label);
+    const fV=pool.find(v=>/amelie|aurelie|marie|sophie|elsa|celine|alice|julie|audrey|virginie|florence/i.test(v.name));
+    const mV=pool.find(v=>/thomas|pierre|nicolas|jean|paul|felix|bruno|martin|yannick/i.test(v.name));
+    utt.voice=(wF&&fV)||((!wF)&&mV)||pool[0];
+  }
+  window.speechSynthesis.speak(utt);
+}
+
+// ── MAIN speakText ──
+function speakText(text,lang) {
+  if(voiceEngine==='elevenlabs'&&elevenKey&&elevenVoiceId) {
+    elevenSpeak(text,elevenVoiceId,false).then(ok=>{ if(!ok) browserSpeak(text,lang); });
+  } else {
+    browserSpeak(text,lang);
+  }
+}
+
+function speakSlow(text) {
+  // For slow mode, always use browser TTS at reduced rate
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang='fr-FR'; utt.rate=0.45;
+  const v=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('fr'));
+  if(v) utt.voice=v;
+  window.speechSynthesis.speak(utt);
+}
+
+function autoSpeak() {
+  const card=currentCard();
+  if(!card) return;
+  pickRandomPersona();
+  setTimeout(()=>speakText(showDir==='fr'?card.fr:card.es, showDir==='fr'?'fr-FR':'en-US'), 300);
+}
+
+// ─── PHONETICS ─────────────────────────────────────────────────────────────
+// ─── PHONETIC ENGINE ────────────────────────────────────────────────────────
+
+// Strip accents, punctuation, lowercase
+function normalize(s) {
+  return s.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[.,!?¿¡'"«»\-]/g,"")
+    .replace(/\s+/g," ").trim();
+}
+
+// French phonetic folding: map common sound-alikes so "on/ont/ont", "est/et/ai", etc. match
+function phonoFold(s) {
+  return s
+    .replace(/eau|aux|au/g,"o")
+    .replace(/ain|ein|in|un|im|yn/g,"an")
+    .replace(/ais|ait|aient|ai|ei/g,"e")
+    .replace(/eux|eu/g,"e")
+    .replace(/ou/g,"u")
+    .replace(/oi/g,"wa")
+    .replace(/ch/g,"sh")
+    .replace(/ph/g,"f")
+    .replace(/gn/g,"ny")
+    .replace(/qu/g,"k")
+    .replace(/ll/g,"l")
+    .replace(/ss/g,"s")
+    .replace(/([aeiou])s([aeiou])/g,"$1z$2") // liaison s→z
+    .replace(/x$/g,"")       // silent final x
+    .replace(/s$/g,"")       // silent final s
+    .replace(/t$/g,"")       // silent final t
+    .replace(/d$/g,"")       // silent final d
+    .replace(/z$/g,"")       // silent final z
+    .replace(/[ée]/g,"e")
+    .replace(/[àâa]/g,"a")
+    .replace(/[îi]/g,"i")
+    .replace(/[ôo]/g,"o")
+    .replace(/[ùûu]/g,"u")
+    .replace(/h/g,"");       // silent h
+}
+
+function levenshtein(a,b) {
+  const m=a.length, n=b.length;
+  if (!m) return n; if (!n) return m;
+  const dp=[];
+  for(let i=0;i<=m;i++) { dp[i]=[i]; }
+  for(let j=0;j<=n;j++) { dp[0][j]=j; }
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// Score a single word pair 0..1
+function wordScore(sw, tw) {
+  if (!tw.length) return 1;
+  if (sw===tw) return 1;
+  // try phonoFold
+  const sf=phonoFold(sw), tf=phonoFold(tw);
+  if (sf===tf) return 0.95;
+  // substring bonus
+  if (tw.includes(sw)||sw.includes(tw)) return 0.85;
+  // levenshtein on folded
+  const d=levenshtein(sf,tf);
+  const ratio=1-d/Math.max(sf.length,tf.length,1);
+  return Math.max(ratio, 0);
+}
+
+// Main similarity: best-alignment word matching (handles dropped articles, liaisons)
+function phoneticSimilarity(spoken, target) {
+  const s=normalize(spoken), t=normalize(target);
+  if (s===t) return 1.0;
+  if (!s||!t) return 0.0;
+
+  const sw=s.split(" ").filter(Boolean);
+  const tw=t.split(" ").filter(Boolean);
+
+  // Skip filler/article words for noise detection
+  const fillers=new Set(["le","la","les","l","de","du","des","un","une","a","au","aux","je","tu","il","elle","nous","vous","ils","elles","et","est","en","on"]);
+
+  // For each target word, find best matching spoken word (flexible order)
+  let totalScore=0;
+  const usedIdx=new Set();
+  tw.forEach(tw_w => {
+    let best=0, bestIdx=-1;
+    sw.forEach((sw_w,i)=>{
+      if (usedIdx.has(i)) return;
+      const sc=wordScore(sw_w,tw_w);
+      if (sc>best) { best=sc; bestIdx=i; }
+    });
+    if (bestIdx>=0 && best>0.4) usedIdx.add(bestIdx);
+    // Weight content words more than fillers
+    const weight=fillers.has(tw_w)?0.5:1.0;
+    totalScore+=best*weight;
+  });
+
+  // Normalize by weighted target length
+  const totalWeight=tw.reduce((s,w)=>s+(fillers.has(w)?0.5:1.0),0);
+  const wordSim=totalScore/Math.max(totalWeight,1);
+
+  // Coverage: penalize if spoken is much longer (added random words)
+  const lenRatio=Math.min(sw.length,tw.length)/Math.max(sw.length,tw.length,1);
+
+  // Combine: word similarity is primary
+  return Math.min(1.0, wordSim*0.8 + lenRatio*0.2);
+}
+
+// Noise threshold: check if transcript looks totally unrelated
+function isNoise(spoken, target) {
+  const s=normalize(spoken), t=normalize(target);
+  // If spoken is just 1 word and target has 3+, likely noise
+  const sw=s.split(" ").filter(Boolean);
+  const tw=t.split(" ").filter(Boolean);
+  if (sw.length===1 && tw.length>=3) {
+    const score=wordScore(sw[0], tw[0])||wordScore(sw[0], tw[tw.length-1]);
+    return score<0.5;
+  }
+  return phoneticSimilarity(spoken,target)<0.22;
+}
+
+function phoneticCompare(spoken, target) {
+  const sw=normalize(spoken).split(" ").filter(Boolean);
+  const tw=normalize(target).split(" ").filter(Boolean);
+  const targetOrig=target.split(" ");
+
+  // Match each target word to best spoken word
+  const usedIdx=new Set();
+  const matches=tw.map(tw_w=>{
+    let best=0, bestIdx=-1;
+    sw.forEach((sw_w,i)=>{
+      if (usedIdx.has(i)) return;
+      const sc=wordScore(sw_w,tw_w);
+      if (sc>best) { best=sc; bestIdx=i; }
+    });
+    if (bestIdx>=0 && best>0.4) usedIdx.add(bestIdx);
+    return { score:best, spokenWord: bestIdx>=0?sw[bestIdx]:"—" };
+  });
+
+  let html='<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:6px 0;">';
+  tw.forEach((tw_w,i)=>{
+    const sc=matches[i].score;
+    const color=sc>=0.85?"#4ade80":sc>=0.6?"#facc15":"#f87171";
+    const orig=targetOrig[i]||tw_w;
+    html+=`<span style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+      <span style="color:${color};font-weight:700;font-size:0.9rem;">${orig}</span>
+      <span style="color:#666;font-size:0.6rem;">${matches[i].spokenWord}</span>
+    </span>`;
+  });
+  html+="</div>";
+
+  // Find worst word for tip
+  let worstScore=1, worstWord="";
+  tw.forEach((w,i)=>{ if(matches[i].score<worstScore){worstScore=matches[i].score;worstWord=targetOrig[i]||w;} });
+  const tip = worstScore<0.6
+    ? `💡 Focus on: <strong style="color:#facc15">${worstWord}</strong>`
+    : sw.length < tw.length*0.7 ? "💡 Say the full phrase" : "";
+
+  return html+(tip?`<div style="font-size:0.7rem;color:#888;margin-top:2px;">${tip}</div>`:"");
+}
+
+
+
+function renderSpeakBox(containerId, targetFr) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (spokePassed) {
+    el.innerHTML = `<div style="border:1px solid #4ade80;border-radius:8px;background:rgba(74,222,128,0.05);padding:12px;text-align:center;">
+      <div style="color:#4ade80;font-size:0.8rem;font-weight:700;letter-spacing:2px;">✓ PARFAIT — CONTINUE ↓</div></div>`;
+    return;
+  }
+  const showSkip = failCount>=3;
+  el.innerHTML = `<div>
+    <div style="font-size:0.6rem;color:#666;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;">🗣 Pronounce to continue</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <span style="font-size:0.95rem;color:#fff;font-weight:700;">« ${targetFr} »</span>
+      <button onclick="speakText('${targetFr.replace(/'/g,"\'")}','fr-FR')"
+        style="background:#1f1f1f;border:1px solid #2a2a2a;border-radius:20px;color:#facc15;padding:4px 12px;font-size:0.7rem;cursor:pointer;letter-spacing:1px;">▶ MODEL</button>
+    </div>
+    ${isMobile?`<button id="mobile-mic-btn-${containerId}" onclick="mobileTapMic('${targetFr.replace(/'/g,"\'")}','${containerId}')"
+      style="display:block;margin:4px auto 10px;padding:11px 28px;border-radius:20px;border:none;font-size:0.82rem;font-family:inherit;cursor:pointer;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;">🎤 TAP TO SPEAK</button>`:""}
+    <div id="mic-status-text-${containerId}" style="font-size:0.7rem;color:${isMobile?"#333":"#f87171"};margin-bottom:6px;letter-spacing:1px;">
+      ${isMobile?"Tap above to speak":"🔴 Listening..."}
+    </div>
+    <div id="phonetic-compare-${containerId}" style="margin:6px 0;min-height:18px;"></div>
+    <div id="speak-result-${containerId}" style="margin-top:4px;"></div>
+    ${showSkip?`<button onclick="skipWord('${containerId}')"
+      style="background:transparent;border:1px solid #333;border-radius:20px;color:#888;padding:5px 18px;font-size:0.7rem;cursor:pointer;font-family:inherit;letter-spacing:1px;margin-top:8px;">⏭ SKIP</button>`:""}
+  </div>`;
+  if (!isMobile) setTimeout(()=>startRecognition(targetFr, containerId), 400);
+}
+
+function mobileTapMic(targetFr, containerId) {
+  if (mobileRecognitionActive) {
+    if (recognition) { try{recognition.abort();}catch(e){} recognition=null; }
+    mobileRecognitionActive=false;
+    const btn=document.getElementById("mobile-mic-btn-"+containerId);
+    if (btn) { btn.textContent="🎤 TAP TO SPEAK"; btn.style.background="linear-gradient(135deg,#10b981,#059669)"; }
+    const s=document.getElementById("mic-status-text-"+containerId);
+    if (s) s.textContent="Tap above to speak";
+  } else {
+    mobileRecognitionActive=true;
+    const btn=document.getElementById("mobile-mic-btn-"+containerId);
+    if (btn) { btn.textContent="⏹ STOP"; btn.style.background="linear-gradient(135deg,#ef4444,#dc2626)"; }
+    startRecognition(targetFr, containerId);
+  }
+}
+
+function skipWord(containerId) {
+  if (recognition) { try{recognition.abort();}catch(e){} recognition=null; }
+  spokePassed=true; failCount=0;
+  renderFeed();
+}
+
+// ── SCENARIOS / CHAT ──
+// ─── CONVERSATION MODE ────────────────────────────────────────────────────
+const scenarios = [
+  {
+    id:"cafe", emoji:"☕", title:"Au Café",
+    subtitle:"Parisian café", level:"A1", color:"#facc15",
+    character:{ name:"Sophie — Waitress, Paris", gender:"female", lang:"fr-FR", rate:1.05, pitch:1.5, voiceName:"fr-FR-Neural2-A" },
+    systemPrompt:`You are Sophie, a warm and slightly rushed Parisian waitress (serveuse) in a typical Parisian café. You're friendly but efficient.
+Speak ONLY in French. Use casual, natural Parisian French. Short sentences (1-3 max).
+Start: welcome them and ask what they want. Take orders, suggest items (café, croissant, crêpe, jus d'orange), bring the bill when asked.
+If the user writes in English, still reply in French but add a translation in parentheses at the end.`
+  },
+  {
+    id:"cafe2", emoji:"☕", title:"Au Café",
+    subtitle:"Café in Lyon", level:"A1", color:"#facc15",
+    character:{ name:"Marc — Waiter, Lyon", gender:"male", lang:"fr-FR", rate:0.97, pitch:-1.0, voiceName:"fr-FR-Neural2-B" },
+    systemPrompt:`You are Marc, a relaxed, chatty waiter (serveur) in a café in Lyon. You speak with a slight southern French warmth.
+Speak ONLY in French. Be casual and a bit slow/deliberate, like someone from the south. Short sentences.
+Start: greet them warmly, ask what they'd like. Chat a bit — ask if they're visiting Lyon, recommend the local specialty (quenelles, praline tart).
+If the user writes in English, still reply in French but add a translation in parentheses.`
+  },
+  {
+    id:"pharmacy", emoji:"💊", title:"La Pharmacie",
+    subtitle:"Pharmacy, Paris", level:"A2", color:"#4ade80",
+    character:{ name:"Nathalie — Pharmacist", gender:"female", lang:"fr-FR", rate:1.0, pitch:0.5, voiceName:"fr-FR-Neural2-C" },
+    systemPrompt:`You are Nathalie, a professional and helpful French pharmacist (pharmacienne) in Paris. You are calm and clear.
+Speak ONLY in French. Use clear, professional vocabulary. Short sentences (1-3).
+Start: greet them and ask how you can help ("Bonjour, qu'est-ce qu'il vous faut ?").
+Ask about symptoms, suggest medicines, ask if they have a prescription, explain dosage.
+If the user writes in English, reply in French but add a translation in parentheses.`
+  },
+  {
+    id:"police", emoji:"👮", title:"Contrôle de Police",
+    subtitle:"Police stop, Paris", level:"B1", color:"#f87171",
+    character:{ name:"Agent Dupont — Police Officer", gender:"male", lang:"fr-FR", rate:0.93, pitch:-2.0, voiceName:"fr-FR-Neural2-D" },
+    systemPrompt:`You are Agent Dupont, a French police officer doing a routine ID check on the street in Paris. Professional, firm but fair.
+Speak ONLY in French. Use formal, clipped police language. Short sentences.
+Start: ask for ID ("Vos papiers, s'il vous plaît."). Ask where they're going, where they live, what they do.
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"hotel", emoji:"🏨", title:"À l'Hôtel",
+    subtitle:"Hotel check-in, Nice", level:"A2", color:"#a78bfa",
+    character:{ name:"Isabelle — Receptionist", gender:"female", lang:"fr-FR", rate:1.02, pitch:1.0, voiceName:"fr-FR-Neural2-E" },
+    systemPrompt:`You are Isabelle, a polite hotel receptionist at a 3-star hotel in Nice on the French Riviera. Cheerful and professional.
+Speak ONLY in French. Be warm but formal (use "vous"). Short sentences.
+Start: welcome them ("Bonsoir, bienvenue à l'Hôtel Azur !"). Ask for reservation name, confirm room, ask about breakfast, give key.
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"doctor", emoji:"🩺", title:"Chez le Médecin",
+    subtitle:"Doctor's office, Paris", level:"B1", color:"#fb923c",
+    character:{ name:"Dr. Moreau — General Practitioner", gender:"male", lang:"fr-FR", rate:0.95, pitch:-1.5, voiceName:"fr-FR-Neural2-B" },
+    systemPrompt:`You are Dr. Moreau, a calm and thorough French general practitioner in Paris. You are reassuring and methodical.
+Speak ONLY in French. Use clear medical vocabulary but explain it simply. Short sentences.
+Start: greet them and ask what brings them in ("Bonjour, qu'est-ce qui vous amène aujourd'hui ?").
+Ask about symptoms, duration, prescribe something if needed.
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"market", emoji:"🛒", title:"Le Marché",
+    subtitle:"Market, Marseille", level:"A1", color:"#34d399",
+    character:{ name:"Fatima — Market vendor, Marseille", gender:"female", lang:"fr-FR", rate:1.1, pitch:2.0, voiceName:"fr-FR-Neural2-A" },
+    systemPrompt:`You are Fatima, an energetic and loud market vendor (vendeuse) at the famous Marché de Noailles in Marseille. You speak fast with a strong southern accent and lots of energy.
+Speak ONLY in French. Be very expressive, use "mon ami / ma belle", speak with southern warmth. Sell fruits, vegetables, spices.
+Start: call out to them loudly and enthusiastically.
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"neighbor", emoji:"🏠", title:"Le Voisin",
+    subtitle:"Apartment building, Paris", level:"A2", color:"#e879f9",
+    character:{ name:"Jean-Pierre — Neighbor, Paris", gender:"male", lang:"fr-FR", rate:1.0, pitch:0.5, voiceName:"fr-FR-Neural2-D" },
+    systemPrompt:`You are Jean-Pierre, a talkative retired neighbor in a Parisian apartment building. You love to chat. Friendly, a bit nosy.
+Speak ONLY in French. Use "tu", be very casual and gossipy. Talk about the weather, the building, other neighbors, the city.
+Start: bump into them in the hallway ("Ah, bonjour ! Ça fait longtemps !").
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"job", emoji:"💼", title:"Entretien d'Embauche",
+    subtitle:"Job interview, Paris", level:"B2", color:"#60a5fa",
+    character:{ name:"Céline Laurent — HR Manager", gender:"female", lang:"fr-FR", rate:0.97, pitch:0.0, voiceName:"fr-FR-Neural2-C" },
+    systemPrompt:`You are Céline Laurent, a professional HR manager at a French tech company in Paris. You are sharp, serious, and evaluating the candidate carefully.
+Speak ONLY in French. Very formal (always "vous"). Ask tough but fair interview questions.
+Start: greet them formally and ask them to introduce themselves ("Bonjour, asseyez-vous. Pouvez-vous vous présenter ?").
+Ask about experience, strengths, why they want the role, a challenging situation they handled.
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+  {
+    id:"quebec", emoji:"🍁", title:"Conversation Québécoise",
+    subtitle:"Coffee shop, Montréal", level:"B1", color:"#f59e0b",
+    character:{ name:"Émilie — Barista, Montréal", gender:"female", lang:"fr-CA", rate:1.05, pitch:1.0, voiceName:"fr-CA-Neural2-A" },
+    systemPrompt:`You are Émilie, a friendly barista in a cool coffee shop in Montréal, Québec. You speak Québécois French — use expressions like "Ostie", "C'est le boutte !", "T'es-tu correct ?", "Ça a pas d'allure", "Je vas", "Chu" (for "je suis"), "Pantoute" (not at all).
+Speak ONLY in French (Québécois). Be very warm and casual. Use "tu" always.
+Start: greet them in typical Québécois style ("Salut ! Qu'est-ce que j'peux t'apporter ?").
+If the user writes in English, reply in French québécois but add translation in parentheses.`
+  },
+  {
+    id:"belgium", emoji:"🇧🇪", title:"En Belgique",
+    subtitle:"Restaurant, Brussels", level:"A2", color:"#10b981",
+    character:{ name:"Bruno — Waiter, Brussels", gender:"male", lang:"fr-BE", rate:0.98, pitch:-0.5, voiceName:"fr-BE-Neural2-A" },
+    systemPrompt:`You are Bruno, a waiter in a traditional Belgian restaurant (brasserie) in Brussels. You speak Belgian French — use "septante" (70), "nonante" (90), "déjeuner" for lunch, "dîner" for dinner, "souper" for late dinner. Say "à tantôt" for goodbye.
+Speak ONLY in French (Belgian accent). Be friendly and proud of Belgian food (moules-frites, carbonade, gaufres, chocolat).
+Start: welcome them warmly and offer the menu.
+If the user writes in English, reply in Belgian French but add translation in parentheses.`
+  },
+  {
+    id:"africa", emoji:"🌍", title:"Conversation Africaine",
+    subtitle:"Phone call, Dakar", level:"B1", color:"#f97316",
+    character:{ name:"Amadou — Business contact, Dakar", gender:"male", lang:"fr-FR", rate:1.0, pitch:-1.0, voiceName:"fr-FR-Neural2-B" },
+    systemPrompt:`You are Amadou, a friendly business contact calling from Dakar, Senegal. You speak West African French — very warm, with lots of politeness formulas. Use expressions like "Je vous en supplie" (please), "C'est pas grave du tout", greet extensively before getting to business.
+Speak ONLY in French. Be warm, indirect, relationship-first. Take time to ask about family/health before business.
+Start: call them on the phone ("Allô ? Bonjour ! Comment vous portez-vous ?").
+If the user writes in English, reply in French but add translation in parentheses.`
+  },
+];
+
+let convHistory = [];
+let currentScenario = null;
+let convMicActive = false;
+let convRecognition = null;
+let hintVisible = false;
+
+function buildScenarioList() {
+  const el = document.getElementById("scenario-list");
+  if (!el) return;
+  el.innerHTML = `<div style="font-size:0.6rem;color:#222;letter-spacing:2px;margin-bottom:10px;">FRANCE</div>`;
+
+  const groups = [
+    { label:"🇫🇷 France", ids:["cafe","cafe2","pharmacy","police","hotel","doctor","market","neighbor","job"] },
+    { label:"🌎 Other accents", ids:["quebec","belgium","africa"] },
+  ];
+
+  groups.forEach(g => {
+    const header = document.createElement("div");
+    header.style.cssText = "font-size:0.58rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin:10px 0 6px;";
+    header.textContent = g.label;
+    el.appendChild(header);
+
+    g.ids.forEach(id => {
+      const sc = scenarios.find(s=>s.id===id);
+      if (!sc) return;
+      const btn = document.createElement("div");
+      btn.style.cssText = `
+        display:flex;align-items:center;gap:12px;
+        padding:12px 14px;border:1px solid #1a1a1a;border-radius:5px;
+        cursor:pointer;margin-bottom:5px;background:#0e0e0e;
+        transition:border-color 0.15s;
+      `;
+      btn.innerHTML = `
+        <div style="font-size:1.6rem;line-height:1;flex-shrink:0;">${sc.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.85rem;">${sc.title}</div>
+          <div style="font-size:0.62rem;color:#666;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sc.character.name}</div>
+        </div>
+        <div style="font-size:0.55rem;font-weight:900;padding:2px 6px;border-radius:2px;background:${sc.color};color:#000;flex-shrink:0;">${sc.level}</div>
+      `;
+      btn.onmouseenter = ()=>btn.style.borderColor="#2a2a2a";
+      btn.onmouseleave = ()=>btn.style.borderColor="#1a1a1a";
+      btn.onclick = ()=>startConversation(sc);
+      el.appendChild(btn);
+    });
+  });
+}
+
+async function startConversation(sc) {
+  currentScenario = sc;
+  convHistory = [];
+  hintVisible = false;
+
+  document.getElementById("conv-title").textContent = sc.title;
+  document.getElementById("conv-level-tag").textContent = sc.character.name + " · " + sc.level;
+  document.getElementById("conv-char-avatar").textContent = sc.emoji;
+  document.getElementById("conv-messages").innerHTML = "";
+  document.getElementById("conv-hint").style.display = "none";
+  document.getElementById("conv-input").value = "";
+  document.getElementById("conv-mic-status").textContent = "";
+
+  showSection("s-conv");
+
+  appendMessage("system", "Starting conversation...", true);
+  const opening = await callClaude([{role:"user", content:"(Start the conversation — say your opening line only, in French.)"}]);
+  clearLoadingMsg();
+  if (opening) {
+    convHistory.push({role:"assistant", content:opening});
+    appendMessage("assistant", opening, false, sc.emoji);
+    speakConv(opening, sc.character);
+  }
+}
+
+async function sendConvMessage() {
+  const input = document.getElementById("conv-input");
+  const text = input.value.trim();
+  if (!text || !currentScenario) return;
+  input.value = "";
+
+  convHistory.push({role:"user", content:text});
+  appendMessage("user", text, false);
+  appendMessage("system", "...", true);
+
+  const reply = await callClaude(convHistory);
+  clearLoadingMsg();
+  if (reply) {
+    convHistory.push({role:"assistant", content:reply});
+    appendMessage("assistant", reply, false, currentScenario.emoji);
+    speakConv(reply, currentScenario.character);
+    if (hintVisible) showHint();
+  }
+}
+
+// ─── VOICE ENGINE — browser TTS ───────────────────────────────────────────
+function speakConv(text, character) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = character.lang || "fr-FR";
+  utt.rate = character.rate || 1.0;
+  utt.pitch = character.pitch || 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const frVoices = voices.filter(v => v.lang.startsWith(character.lang?.split("-")[0] || "fr"));
+
+  let chosen = null;
+  if (character.gender === "female") {
+    chosen = frVoices.find(v => /amelie|aurelie|marie|sophie|elsa|celine|alice|julie|audrey|virginie|florence/i.test(v.name));
+  }
+  if (!chosen && character.gender === "male") {
+    chosen = frVoices.find(v => /thomas|pierre|nicolas|jean|paul|felix|bruno|martin|yannick/i.test(v.name));
+  }
+  if (!chosen) chosen = frVoices[0] || null;
+  if (chosen) utt.voice = chosen;
+
+  window.speechSynthesis.speak(utt);
+}
+
+// ─── CLAUDE API via built-in proxy ────────────────────────────────────────
+async function callClaude(messages) {
+  try {
+    const res = await fetch("https://francais-flash.vacm182.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: currentScenario.systemPrompt,
+        messages: messages
+      })
+    });
+    const data = await res.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    if (data.error) return `⚠ ${data.error.message}`;
+    return null;
+  } catch(e) {
+    return "⚠ Error — please try again.";
+  }
+}
+
+async function toggleHint() {
+  hintVisible = !hintVisible;
+  const el = document.getElementById("conv-hint");
+  if (!hintVisible) { el.style.display = "none"; return; }
+  el.style.display = "block";
+  el.textContent = "Loading hint...";
+  showHint();
+}
+
+async function showHint() {
+  const el = document.getElementById("conv-hint");
+  if (!el || !currentScenario) return;
+  const hintMessages = [
+    ...convHistory,
+    {role:"user", content:"(Out of character: Give me 3 short example French replies I could say right now, with English in parentheses. Format each as: · French (English). No intro text, just the 3 lines.)"}
+  ];
+  const hint = await callClaude(hintMessages);
+  if (hint) el.innerHTML = hint.replace(/\n/g,"<br>");
+}
+
+
+
+function appendMessage(role, text, isLoading, avatar) {
+  const el = document.getElementById("conv-messages");
+  const div = document.createElement("div");
+  if (role==="system") {
+    div.className="conv-loading";
+    div.style.cssText="text-align:center;color:#222;font-size:0.7rem;letter-spacing:1px;padding:6px 0;";
+    div.textContent=text;
+    el.appendChild(div); el.scrollTop=el.scrollHeight; return;
+  }
+  const isUser=role==="user";
+  div.style.cssText=`display:flex;gap:8px;align-items:flex-start;${isUser?"flex-direction:row-reverse;":""}`;
+  if (!isUser && avatar) {
+    const av=document.createElement("div");
+    av.style.cssText="font-size:1.3rem;flex-shrink:0;margin-top:3px;";
+    av.textContent=avatar; div.appendChild(av);
+  }
+  const bubble=document.createElement("div");
+  bubble.style.cssText=`max-width:82%;padding:10px 13px;border-radius:${isUser?"12px 12px 2px 12px":"12px 12px 12px 2px"};font-size:0.88rem;line-height:1.55;background:${isUser?"#fff":"#1a1a1a"};color:${isUser?"#000":"#ddd"};border:${isUser?"none":"1px solid #2a2a2a"};white-space:pre-wrap;`;
+  bubble.textContent=text; div.appendChild(bubble);
+  if (!isUser) {
+    const spkBtn=document.createElement("button");
+    spkBtn.textContent="🔊";
+    spkBtn.style.cssText="background:none;border:none;cursor:pointer;font-size:0.75rem;opacity:0.3;padding:2px;margin-top:10px;flex-shrink:0;";
+    spkBtn.onclick=()=>speakConv(text,currentScenario.character);
+    div.appendChild(spkBtn);
+  }
+  el.appendChild(div); el.scrollTop=el.scrollHeight;
+}
+
+function clearLoadingMsg() {
+  document.getElementById("conv-messages").querySelectorAll(".conv-loading").forEach(l=>l.remove());
+}
+
+function closeConv() {
+  window.speechSynthesis?.cancel();
+  if (convRecognition) { try{convRecognition.abort();}catch(e){} convRecognition=null; }
+  document.getElementById("conv-screen").classList.remove("active");
+  document.getElementById("conv-screen").style.display="none";
+  // show previous screen
+  switchScreen("chat");
+}
+
+function startConversation(sc) {
+  currentScenario = sc;
+  convHistory = [];
+  hintVisible = false;
+  document.getElementById("conv-title").textContent = sc.title;
+  document.getElementById("conv-level-tag").textContent = sc.character.name + " · " + sc.level;
+  document.getElementById("conv-char-avatar").textContent = sc.emoji;
+  document.getElementById("conv-messages").innerHTML = "";
+  document.getElementById("conv-hint-box").style.display = "none";
+  document.getElementById("conv-input").value = "";
+  document.getElementById("conv-mic-status").textContent = "";
+
+  // Show conv screen over chat
+  const convEl = document.getElementById("conv-screen");
+  convEl.style.display = "flex";
+  convEl.classList.add("active");
+
+  appendMessage("system","Starting conversation...",true);
+  callClaude([{role:"user",content:"(Start the conversation — say your opening line only, in French.)"}]).then(opening=>{
+    clearLoadingMsg();
+    if (opening) {
+      convHistory.push({role:"assistant",content:opening});
+      appendMessage("assistant",opening,false,sc.emoji);
+      speakConv(opening,sc.character);
+    }
+  });
+}
+
+function clearLoadingMsg() {
+  document.getElementById("conv-messages").querySelectorAll(".conv-loading").forEach(l=>l.remove());
+}
+
+function toggleConvMic() {
+  convMicActive ? stopConvMic() : startConvMic();
+}
+
+function startConvMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { document.getElementById("conv-mic-status").textContent = "Use Chrome for mic"; return; }
+  convMicActive = true;
+  const btn = document.getElementById("conv-mic-btn");
+  const status = document.getElementById("conv-mic-status");
+  btn.textContent = "⏹ STOP"; btn.style.color = "#f87171";
+  status.textContent = "🔴 Listening...";
+
+  convRecognition = new SR();
+  convRecognition.lang = "fr-FR";
+  convRecognition.continuous = false;
+  convRecognition.interimResults = false;
+  convRecognition.maxAlternatives = 3;
+  convRecognition.onresult = (e) => {
+    document.getElementById("conv-input").value = e.results[0][0].transcript.trim();
+    status.textContent = "✓ Got it — hit Send";
+    stopConvMic();
+  };
+  convRecognition.onerror = (e) => { status.textContent = e.error; stopConvMic(); };
+  convRecognition.onend = () => stopConvMic();
+  try { convRecognition.start(); } catch(e) { stopConvMic(); }
+}
+
+function stopConvMic() {
+  convMicActive = false;
+  if (convRecognition) { try{convRecognition.abort();}catch(e){} convRecognition=null; }
+  const btn = document.getElementById("conv-mic-btn");
+  if (btn) { btn.textContent = "🎤 MIC"; btn.style.color = "#888"; }
+}
+
+
+</script>
+</body>
+
+
+
+init();
+
+
+// ── LISTEN QUIZ MODE ─────────────────────────────────────────────────────────
+// Identical to Quiz but the question card shows ONLY audio — no text visible.
+let lqDeck    = [];
+let lqIndex   = 0;
+let lqScore   = 0;
+let lqLevel   = 'All';
+let lqOpts    = [];
+let lqStreak  = 0;
+let lqMaxStr  = 0;
+let lqPicked  = false;   // has user answered current card?
+let lqPlays   = 0;       // times audio played this card
+let lqTimer   = null;
+let lqTimeLeft = 10;
+const LQ_SECS  = 10;
+const LQ_LEN   = 10;
+
+function lqInit() {
+  // Level chips
+  const lc = document.getElementById('lq-level-chips');
+  if (lc) {
+    lc.innerHTML = '';
+    ['All','A1','A2','B1','B2'].forEach(l => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (l === lqLevel ? ' active' : '');
+      b.textContent = l;
+      if (l !== 'All') b.setAttribute('data-level', l);
+      b.onclick = () => { lqLevel = l; lqInit(); };
+      lc.appendChild(b);
+    });
+  }
+  // Count chips: 10 / 20 / 50
+  const cc = document.getElementById('lq-count-chips');
+  if (cc) {
+    cc.innerHTML = '';
+    [10, 20, 50].forEach(n => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (n === LQ_LEN ? ' active' : '');
+      b.textContent = n;
+      b.onclick = () => {};  // static for now
+      cc.appendChild(b);
+    });
+  }
+  lqStart();
+}
+
+function lqStart() {
+  lqClearTimer();
+  const pool = weightedShuffle(allCards.filter(c => lqLevel === 'All' || c.level === lqLevel));
+  lqDeck   = pool.slice(0, LQ_LEN);
+  lqIndex  = 0; lqScore = 0; lqStreak = 0; lqMaxStr = 0;
+  lqShowCard();
+}
+
+function lqShowCard() {
+  const feed = document.getElementById('lq-feed');
+  if (!feed) return;
+
+  if (lqIndex >= lqDeck.length) { lqShowResult(); return; }
+
+  const card = lqDeck[lqIndex];
+  lqPicked = false;
+  lqPlays  = 0;
+  lqOpts   = generateOptions(card, allCards.filter(c => lqLevel === 'All' || c.level === lqLevel));
+
+  // Progress
+  const bar = document.getElementById('lq-bar');
+  if (bar) { bar.style.width = (lqIndex / lqDeck.length * 100) + '%'; bar.style.background = levelColors[card.level] || '#fff'; }
+  const sc = document.getElementById('lq-score'); if (sc) sc.textContent = lqScore;
+  const pr = document.getElementById('lq-progress-txt'); if (pr) pr.textContent = (lqIndex+1) + ' / ' + lqDeck.length;
+  lqUpdateStreak();
+
+  // Build HTML — question card has NO text, only audio button
+  feed.innerHTML =
+    '<div class="feed-card">' +
+
+      // ── QUESTION CARD (audio only) ──
+      '<div style="background:var(--card);border:1px solid var(--border2);border-radius:12px;flex-shrink:0;overflow:hidden;">' +
+
+        // top meta
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0;">' +
+          '<div style="display:flex;align-items:center;gap:6px;">' +
+            '<span style="font-size:1rem;">' + (categoryEmojis[card.category]||'📚') + '</span>' +
+            '<span style="font-size:0.58rem;font-weight:700;color:#555;letter-spacing:2px;text-transform:uppercase;">' + card.category + '</span>' +
+          '</div>' +
+          '<span class="feed-level-badge badge-' + card.level + '">' + card.level + '</span>' +
+        '</div>' +
+
+        // big play button
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:18px 16px 14px;gap:8px;">' +
+          '<button id="lq-play-btn" onclick="lqPlay()" style="' +
+            'width:74px;height:74px;border-radius:50%;' +
+            'background:linear-gradient(135deg,#ffffff,#cccccc);' +
+            'border:none;cursor:pointer;font-size:1.9rem;' +
+            'display:flex;align-items:center;justify-content:center;' +
+            'box-shadow:0 0 28px rgba(255,255,255,0.18);' +
+            'transition:transform 0.12s;">' +
+            '🔊' +
+          '</button>' +
+          '<div id="lq-play-hint" style="font-size:0.6rem;color:#555;letter-spacing:1px;">Toca para escuchar</div>' +
+        '</div>' +
+
+        // timer bar at bottom of card
+        '<div style="height:3px;background:#1a1a1a;overflow:hidden;">' +
+          '<div id="lq-timer-bar" style="height:100%;width:100%;background:#4ade80;transition:background 0.5s;"></div>' +
+        '</div>' +
+
+      '</div>' +
+
+      // timer label
+      '<div style="display:flex;justify-content:space-between;padding:4px 4px 0;">' +
+        '<span style="font-size:0.6rem;color:#333;letter-spacing:1px;">🎧 Elige la traducción</span>' +
+        '<span id="lq-timer-label" style="font-size:0.62rem;color:#555;letter-spacing:1px;">' + LQ_SECS + 's</span>' +
+      '</div>' +
+
+      // options
+      '<div id="lq-opts" style="margin-top:6px;display:flex;flex-direction:column;flex:1;"></div>' +
+
+    '</div>';
+
+  lqRenderOpts();
+  lqStartTimer();
+  setTimeout(lqPlay, 400);
+}
+
+function lqRenderOpts() {
+  const wrap = document.getElementById('lq-opts');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const card = lqDeck[lqIndex];
+  lqOpts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.innerHTML = '<span style="flex:1;text-align:left;line-height:1.4;">' + opt.es + '</span>';
+    btn.onclick = () => lqPick(i);
+    wrap.appendChild(btn);
+  });
+}
+
+function lqPlay() {
+  const card = lqDeck[lqIndex];
+  if (!card) return;
+  lqPlays++;
+  const btn  = document.getElementById('lq-play-btn');
+  const hint = document.getElementById('lq-play-hint');
+  if (btn) { btn.style.transform = 'scale(0.88)'; setTimeout(() => btn.style.transform = 'scale(1)', 130); }
+  if (lqPlays >= 4) {
+    speakSlow(card.fr);
+    if (hint) hint.innerHTML = 'Play #' + lqPlays + ' · <span style="color:#facc15;">🐢 lento</span>';
+  } else {
+    pickRandomPersona();
+    speakText(card.fr, 'fr-FR');
+    const left = 3 - lqPlays;
+    if (hint) hint.innerHTML = left > 0
+      ? 'Play #' + lqPlays + ' · <span style="color:#666;">' + left + ' rápidos restantes</span>'
+      : 'Play #' + lqPlays + ' · <span style="color:#facc15;">próximo será 🐢 lento</span>';
+  }
+}
+
+function lqPick(idx) {
+  if (lqPicked) return;
+  lqPicked = true;
+  lqClearTimer();
+  const card    = lqDeck[lqIndex];
+  const isOk    = lqOpts[idx].es === card.es;
+  if (isOk) { lqScore++; lqStreak++; lqMaxStr = Math.max(lqMaxStr, lqStreak); playBellSound(); }
+  else      { lqStreak = 0; playBuzzSound(); vibrateWrong(); }
+
+  // Color buttons + show the French text on correct
+  const btns = document.querySelectorAll('#lq-opts .quiz-option');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    const iC = lqOpts[i].es === card.es;
+    if (i === idx && isOk)  { b.style.background='rgba(74,222,128,0.12)'; b.style.borderColor='#4ade80'; b.style.color='#4ade80'; b.innerHTML += '<span style="margin-left:8px;">✓</span>'; }
+    else if (i === idx)     { b.style.background='rgba(248,113,113,0.12)'; b.style.borderColor='#f87171'; b.style.color='#f87171'; b.innerHTML += '<span style="margin-left:8px;">✗</span>'; }
+    else if (iC)            { b.style.color='#4ade8060'; b.style.borderColor='#4ade8030'; }
+    else                    { b.style.color='#2a2a2a'; }
+  });
+
+  // Reveal the French phrase below the play button
+  const playArea = document.querySelector('#lq-feed .feed-card > div:first-child');
+  if (playArea) {
+    const rev = document.createElement('div');
+    rev.style.cssText = 'text-align:center;padding:6px 16px 10px;border-top:1px solid #1a1a1a;';
+    rev.innerHTML = '<div style="font-size:1.1rem;font-weight:900;color:#fff;">' + card.fr + '</div>';
+    playArea.appendChild(rev);
+  }
+
+  const sc = document.getElementById('lq-score'); if (sc) sc.textContent = lqScore;
+  lqUpdateStreak();
+  setTimeout(() => { lqIndex++; lqShowCard(); }, 1400);
+}
+
+function lqTimedOut() {
+  if (lqPicked) return;
+  lqPicked = true;
+  lqStreak = 0;
+  playBuzzSound(); vibrateWrong();
+  // Show correct answer
+  const card = lqDeck[lqIndex];
+  const btns = document.querySelectorAll('#lq-opts .quiz-option');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (lqOpts[i].es === card.es) { b.style.color='#4ade80'; b.style.borderColor='#4ade80'; b.innerHTML += '<span style="font-size:0.65rem;margin-left:8px;letter-spacing:1px;">← CORRECT</span>'; }
+    else { b.style.color='#2a2a2a'; }
+  });
+  // Reveal French
+  const playArea = document.querySelector('#lq-feed .feed-card > div:first-child');
+  if (playArea) {
+    const rev = document.createElement('div');
+    rev.style.cssText = 'text-align:center;padding:6px 16px 10px;border-top:1px solid #1a1a1a;';
+    rev.innerHTML = '<div style="font-size:0.65rem;color:#f87171;letter-spacing:2px;margin-bottom:4px;">⏱ TIEMPO</div><div style="font-size:1.1rem;font-weight:900;color:#fff;">' + card.fr + '</div>';
+    playArea.appendChild(rev);
+  }
+  setTimeout(() => { lqIndex++; lqShowCard(); }, 1800);
+}
+
+// ── TIMER ──
+function lqStartTimer() {
+  lqClearTimer();
+  lqTimeLeft = LQ_SECS;
+  lqUpdateTimerBar();
+  lqTimer = setInterval(() => {
+    lqTimeLeft--;
+    lqUpdateTimerBar();
+    if (lqTimeLeft <= 0) { lqClearTimer(); lqTimedOut(); }
+  }, 1000);
+}
+function lqClearTimer() { if (lqTimer) { clearInterval(lqTimer); lqTimer = null; } }
+function lqUpdateTimerBar() {
+  const bar   = document.getElementById('lq-timer-bar');
+  const label = document.getElementById('lq-timer-label');
+  const pct   = (lqTimeLeft / LQ_SECS) * 100;
+  if (bar) { bar.style.width = pct + '%'; bar.style.background = lqTimeLeft > 6 ? '#4ade80' : lqTimeLeft > 3 ? '#facc15' : '#f87171'; }
+  if (label) { label.textContent = lqTimeLeft + 's'; label.style.color = lqTimeLeft <= 3 ? '#f87171' : '#555'; }
+}
+
+// ── STREAK ──
+function lqUpdateStreak() {
+  const el = document.getElementById('lq-streak-display');
+  if (!el) return;
+  if (lqStreak >= 3) {
+    const e = lqStreak>=10?'🔥🔥':'🔥';
+    el.textContent = e + ' ' + lqStreak;
+    el.style.color = lqStreak>=10?'#fb923c':lqStreak>=5?'#facc15':'#fff';
+    el.style.opacity = '1';
+    el.classList.remove('streak-pop'); void el.offsetWidth; el.classList.add('streak-pop');
+  } else { el.textContent = ''; el.style.opacity = '0'; }
+}
+
+// ── RESULT ──
+function lqShowResult() {
+  lqClearTimer();
+  const feed = document.getElementById('lq-feed');
+  if (!feed) return;
+  const pct  = lqDeck.length ? lqScore / lqDeck.length : 0;
+  const ring = pct >= 0.7 ? '#4ade80' : pct >= 0.5 ? '#facc15' : '#f87171';
+  const tro  = pct >= 0.8 ? '🏆' : pct >= 0.5 ? '🥇' : '💪';
+  const msg  = pct >= 0.8 ? 'Excellent !' : pct >= 0.5 ? 'Bon travail !' : 'Continue !';
+  const strBadge = lqMaxStr >= 3
+    ? '<div style="display:inline-flex;align-items:center;gap:6px;background:#1a1a0a;border:1px solid #facc1540;border-radius:20px;padding:5px 14px;">' +
+        '<span style="font-size:1rem;">🔥</span>' +
+        '<span style="font-size:0.78rem;color:#facc15;font-weight:700;">Best streak: ' + lqMaxStr + '</span>' +
+      '</div>' : '';
+  feed.innerHTML =
+    '<div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:14px;">' +
+      '<div style="font-size:3rem;">' + tro + '</div>' +
+      '<div style="display:inline-flex;align-items:center;justify-content:center;width:90px;height:90px;border-radius:50%;border:4px solid ' + ring + ';background:' + ring + '18;flex-direction:column;">' +
+        '<div style="font-size:1.8rem;font-weight:900;line-height:1;">' + Math.round(pct*100) + '%</div>' +
+        '<div style="font-size:0.58rem;color:#888;">' + lqScore + '/' + lqDeck.length + '</div>' +
+      '</div>' +
+      '<div style="font-size:0.7rem;color:#666;letter-spacing:3px;text-transform:uppercase;">' + msg + '</div>' +
+      strBadge +
+      '<button onclick="lqStart()" style="width:100%;max-width:260px;padding:14px;border-radius:10px;border:none;background:#fff;color:#000;font-weight:900;font-size:0.82rem;cursor:pointer;font-family:inherit;letter-spacing:2px;text-transform:uppercase;">↺ Play Again</button>' +
+    '</div>';
+}
+
+
+init();
+</script>
+</body>
+</html>
