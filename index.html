@@ -127,6 +127,15 @@ body::before {
 /* Stats row */
 .stats-row { display: flex; justify-content: space-between; font-size: 0.65rem; color: #333; margin-bottom: 6px; letter-spacing: 2px; text-transform: uppercase; }
 
+/* Quiz timer bar */
+#qz-timer-wrap { height: 4px; background: #1a1a1a; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+#qz-timer-bar { height: 100%; width: 100%; background: #4ade80; transition: background 0.4s; }
+#qz-timer-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 2px 6px; }
+#qz-timer-label { font-size: 0.6rem; color: #444; letter-spacing: 1px; }
+#qz-count-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.count-chip { padding: 4px 12px; border-radius: 20px; border: 1px solid #2a2a2a; cursor: pointer; font-size: 0.65rem; font-family: inherit; background: transparent; color: #555; letter-spacing: 1px; transition: all 0.15s; }
+.count-chip.active { background: #fff; color: #000; border-color: #fff; font-weight: 700; }
+
 /* Quiz options */
 .option {
   padding: 12px 16px; border-radius: 4px; border: 1px solid #222;
@@ -228,7 +237,15 @@ body::before {
 
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
         <button class="btn-primary" onclick="startGame('flashcard')">▶ Flashcards</button>
+        <div style="font-size:0.6rem;color:#444;letter-spacing:2px;text-transform:uppercase;margin-top:4px;margin-bottom:2px;">Questions</div>
+        <div id="qz-count-row" class="filter-row">
+          <button class="count-chip active" onclick="setQuizLen(10,this)">10</button>
+          <button class="count-chip" onclick="setQuizLen(20,this)">20</button>
+          <button class="count-chip" onclick="setQuizLen(50,this)">50</button>
+          <button class="count-chip" onclick="setQuizLen(100,this)">100</button>
+        </div>
         <button class="btn-secondary" onclick="startGame('quiz')">◈ Multiple Choice</button>
+        <button class="btn-secondary" onclick="startGame('oral')" style="border-color:#fb923c;color:#fb923c;">🎧 Oral Comprehension</button>
       </div>
     </div>
 
@@ -279,6 +296,11 @@ body::before {
     </div>
     <div class="progress-bar"><div class="progress-fill" id="qz-bar" style="background:#fff;width:0%"></div></div>
 
+    <div id="qz-timer-wrap"><div id="qz-timer-bar"></div></div>
+    <div id="qz-timer-row">
+      <span id="qz-timer-label">10s</span>
+    </div>
+
     <div class="card" style="cursor:default;">
       <div id="qz-level-badge" class="level-badge"></div>
       <button class="sound-btn" onclick="speakText(currentCard().fr,'fr-FR')">🔊</button>
@@ -291,6 +313,42 @@ body::before {
     <div id="qz-options"></div>
     <div id="qz-speak-box" style="display:none;"></div>
     <button class="btn-ghost" onclick="showMenu()">← Menu</button>
+  </div>
+
+  <!-- ORAL COMPREHENSION -->
+  <div id="s-oral" class="section">
+    <div class="stats-row">
+      <span>⭐ <span id="or-score">0</span></span>
+      <span id="or-progress-txt">1 / ?</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="or-bar" style="background:#fb923c;width:0%"></div></div>
+    <div id="or-timer-wrap" style="height:4px;background:#1a1a1a;border-radius:0 0 6px 6px;overflow:hidden;margin-top:-1px;"><div id="or-timer-bar" style="height:100%;width:100%;background:#fb923c;transition:background 0.4s;"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px 6px;">
+      <span id="or-timer-label" style="font-size:0.6rem;color:#444;letter-spacing:1px;">20s</span>
+    </div>
+
+    <!-- Audio card — NO text shown -->
+    <div class="card" style="cursor:default;text-align:center;">
+      <div id="or-level-badge" class="level-badge"></div>
+      <div id="or-cat" style="font-size:0.6rem;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;"></div>
+      <button id="or-play-btn" onclick="orPlay()" style="
+        width:80px;height:80px;border-radius:50%;
+        background:linear-gradient(135deg,#fff,#ccc);
+        border:none;cursor:pointer;font-size:2rem;
+        display:flex;align-items:center;justify-content:center;
+        margin:0 auto 12px;
+        box-shadow:0 0 28px rgba(255,255,255,0.15);
+        transition:transform 0.12s;
+      ">🔊</button>
+      <div id="or-play-hint" style="font-size:0.65rem;color:#444;letter-spacing:1px;">Tap to hear · fast speed</div>
+      <div id="or-reveal" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid #1f1f1f;">
+        <div style="font-size:0.6rem;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">The phrase was:</div>
+        <div id="or-reveal-text" style="font-size:1.4rem;font-weight:900;color:#fff;"></div>
+      </div>
+    </div>
+
+    <div id="or-options"></div>
+    <button class="btn-ghost" onclick="orStop();showMenu()">← Menu</button>
   </div>
 
   <!-- RESULT -->
@@ -802,22 +860,65 @@ function getFiltered() {
   });
 }
 function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+// Quiz length (user-selectable)
+let quizLen = 10;
+function setQuizLen(n, btn) {
+  quizLen = n;
+  document.querySelectorAll('.count-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 function generateOptions(correct, all) {
-  const others = shuffle(all.filter(c=>c.es!==correct.es)).slice(0,3);
-  return shuffle([correct,...others]);
+  const others = all.filter(c => c.es !== correct.es);
+
+  function score(a, b) {
+    let s = 0;
+    const aF = a.fr.toLowerCase(), bF = b.fr.toLowerCase();
+    // Same level = harder
+    if (a.level === b.level) s += 4;
+    // Same category = thematically tricky
+    if (a.category === b.category) s += 5;
+    // Both questions or both not
+    if (aF.includes('?') === bF.includes('?')) s += 3;
+    // Both negations
+    const neg = s => /ne|n'/.test(s);
+    if (neg(aF) === neg(bF)) s += 2;
+    // Similar first word (je/tu/il/vous…)
+    const fw = s => s.split(/\s+/)[0];
+    if (fw(aF) === fw(bF)) s += 3;
+    // Similar length
+    const ratio = Math.min(aF.length, bF.length) / Math.max(aF.length, bF.length);
+    if (ratio > 0.65) s += 2;
+    // Shared content word — makes it really tricky
+    const words = s => new Set(s.split(/\s+/).filter(w => w.length > 3));
+    const aw = words(aF), bArr = bF.split(/\s+/).filter(w => w.length > 3);
+    if (bArr.some(w => aw.has(w))) s += 4;
+    return s;
+  }
+
+  const scored = others.map(c => ({ c, s: score(correct, c) }));
+  scored.sort((a, b) => b.s - a.s);
+  const pool = scored.slice(0, Math.min(10, scored.length)).map(x => x.c);
+  return shuffle([correct, ...shuffle(pool).slice(0, 3)]);
 }
 function currentCard() { return deck[deckIndex]; }
 
 function startGame(mode) {
   lastMode = mode;
+  qzClearTimer();
+  orStop();
   const filtered = getFiltered();
   if (!filtered.length) { alert("No cards match these filters."); return; }
-  deck = shuffle(filtered);
+  let pool = shuffle(filtered);
+  if (mode === "quiz" || mode === "oral") pool = pool.slice(0, quizLen);
+  deck = pool;
   deckIndex=0; score=0; isFlipped=false; selectedOpt=null; spokePassed=false; failCount=0; mobileRecognitionActive=false;
-  if (mode==="quiz") options = generateOptions(deck[0], filtered);
+  if (mode==="quiz" || mode==="oral") options = generateOptions(deck[0], filtered);
   showSection("s-"+mode);
+  if (mode === "oral") { orRenderCard(); orStartTimer(); setTimeout(orAutoPlay, 500); return; }
   renderCard(mode);
   autoSpeak();
+  if (mode==="quiz") qzStartTimer();
 }
 
 function showSection(id) {
@@ -832,13 +933,17 @@ function showMenu() {
 
 function nextCard() {
   if (speakMode && !spokePassed) return;
+  qzClearTimer();
+  orStop();
   deckIndex++;
   if (deckIndex>=deck.length) { showResult(); return; }
   isFlipped=false; selectedOpt=null; spokePassed=false; failCount=0; mobileRecognitionActive=false;
   const filtered = getFiltered();
-  if (lastMode==="quiz") options = generateOptions(deck[deckIndex], filtered);
+  if (lastMode==="quiz" || lastMode==="oral") options = generateOptions(deck[deckIndex], filtered);
+  if (lastMode==="oral") { orRenderCard(); orStartTimer(); setTimeout(orAutoPlay, 400); return; }
   renderCard(lastMode);
   autoSpeak();
+  if (lastMode==="quiz") qzStartTimer();
 }
 
 function flipCard() {
@@ -850,8 +955,11 @@ function flipCard() {
 function handleAnswer(idx) {
   if (selectedOpt!==null) return;
   if (speakMode && !spokePassed) return;
+  qzClearTimer();
   selectedOpt=idx;
-  if (options[idx].es===currentCard().es) score++;
+  const correct = options[idx].es===currentCard().es;
+  if (correct) { score++; playBellSound(); }
+  else { playBuzzSound(); if (navigator.vibrate) navigator.vibrate([80,40,80]); }
   renderCard("quiz");
   setTimeout(nextCard, 1200);
 }
@@ -1127,6 +1235,77 @@ function startRecognition(targetFr, containerId) {
 }
 
 // ─── AUDIO / SOUNDS ────────────────────────────────────────────────────────
+// ── QUIZ TIMER ──────────────────────────────────────────────────────────────
+let qzTimer = null, qzTimeLeft = 10;
+const QZ_SECS = 10;
+
+function qzStartTimer() {
+  qzClearTimer();
+  qzTimeLeft = QZ_SECS;
+  qzUpdateBar();
+  qzTimer = setInterval(() => {
+    qzTimeLeft--;
+    qzUpdateBar();
+    if (qzTimeLeft <= 0) { qzClearTimer(); qzTimeExpired(); }
+  }, 1000);
+}
+function qzClearTimer() { if (qzTimer) { clearInterval(qzTimer); qzTimer = null; } }
+function qzUpdateBar() {
+  const bar   = document.getElementById('qz-timer-bar');
+  const label = document.getElementById('qz-timer-label');
+  if (!bar) return;
+  const pct = (qzTimeLeft / QZ_SECS) * 100;
+  bar.style.width = pct + '%';
+  bar.style.background = qzTimeLeft > 6 ? '#4ade80' : qzTimeLeft > 3 ? '#facc15' : '#f87171';
+  if (label) { label.textContent = qzTimeLeft + 's'; label.style.color = qzTimeLeft <= 3 ? '#f87171' : '#444'; }
+}
+function qzTimeExpired() {
+  if (selectedOpt !== null) return;
+  selectedOpt = -1; // timed out sentinel
+  playBuzzSound();
+  if (navigator.vibrate) navigator.vibrate([80,40,80]);
+  renderCard("quiz");
+  setTimeout(nextCard, 1800);
+}
+
+// ── BELL (correct) ───────────────────────────────────────────────────────────
+function playBellSound() {
+  try {
+    const ctx = getAudioCtx();
+    [[523,0],[659,0.07],[784,0.14]].forEach(([freq,delay]) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t = ctx.currentTime + delay;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+      osc.start(t); osc.stop(t + 0.9);
+    });
+  } catch(e) {}
+}
+
+// ── BUZZ (wrong) ─────────────────────────────────────────────────────────────
+function playBuzzSound() {
+  try {
+    const ctx = getAudioCtx();
+    const osc  = ctx.createOscillator();
+    const dist = ctx.createWaveShaper();
+    const gain = ctx.createGain();
+    // Distortion curve
+    const curve = new Float32Array(256);
+    for (let i = 0; i < 256; i++) { const x = (i*2/256)-1; curve[i] = (Math.PI+300)*x/(Math.PI+300*Math.abs(x)); }
+    dist.curve = curve;
+    osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(280, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.35);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
 function playSuccessSound() {
   try {
     const ctx = getAudioCtx();
@@ -1157,32 +1336,146 @@ function playFailSound() {
   } catch(e){}
 }
 
-function speakText(text, lang) {
+// ── GEMINI TTS VOICE SYSTEM ───────────────────────────────────────────────────
+const WORKER_URL = "https://francais-flash.vacm182.workers.dev";
+
+// 8 Gemini voices mapped to distinct personas
+// Available Gemini TTS voices: Aoede, Charon, Fenrir, Kore, Puck, Orbit, Zephyr, Leda
+const PERSONAS = [
+  { name:"Sophie",    voice:"Aoede",  desc:"Bright young woman"        },
+  { name:"Marc",      voice:"Charon", desc:"Deep male, authoritative"  },
+  { name:"Camille",   voice:"Kore",   desc:"Calm, clear teacher"       },
+  { name:"Théo",      voice:"Puck",   desc:"Energetic young man"       },
+  { name:"Antoine",   voice:"Fenrir", desc:"Expressive, dramatic"      },
+  { name:"Élise",     voice:"Leda",   desc:"Warm young woman"          },
+  { name:"Nathalie",  voice:"Zephyr", desc:"Soft, breezy"              },
+  { name:"Jean-Paul", voice:"Orbit",  desc:"Steady, neutral anchor"    },
+];
+
+let currentPersona = null;
+const ttsCache = new Map(); // key: "voice|text" → blob URL
+
+function pickPersona() {
+  const pool = PERSONAS.filter(p => p !== currentPersona);
+  currentPersona = pool[Math.floor(Math.random() * pool.length)];
+  return currentPersona;
+}
+
+// Show loading state on a button element
+function setPlayBtnLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.textContent = loading ? "⏳" : "🔊";
+  btn.disabled = loading;
+}
+
+// Core TTS: fetch from Worker, cache result, play
+async function playGeminiTTS(text, voice, slow = false) {
+  const cacheKey = `${slow ? "slow" : voice}|${text}`;
+
+  // Play from cache immediately if available
+  if (ttsCache.has(cacheKey)) {
+    const audio = new Audio(ttsCache.get(cacheKey));
+    audio.play().catch(() => browserFallback(text, slow));
+    return;
+  }
+
+  try {
+    const res = await fetch(`${WORKER_URL}/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, voice, slow })
+    });
+
+    if (!res.ok) throw new Error("TTS fetch failed");
+    const { audioBase64, mimeType } = await res.json();
+
+    // Decode base64 → Blob → URL
+    const binary = atob(audioBase64);
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob   = new Blob([bytes], { type: mimeType || "audio/wav" });
+    const url    = URL.createObjectURL(blob);
+
+    ttsCache.set(cacheKey, url);
+    const audio = new Audio(url);
+    audio.play().catch(() => browserFallback(text, slow));
+
+  } catch (e) {
+    console.warn("Gemini TTS failed, using browser fallback:", e);
+    browserFallback(text, slow);
+  }
+}
+
+// Browser TTS fallback (used if Worker unreachable)
+function browserFallback(text, slow = false) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = lang||"fr-FR"; utt.rate=0.85;
+  utt.lang  = "fr-FR";
+  utt.rate  = slow ? 0.5 : 0.88;
   const voices = window.speechSynthesis.getVoices();
-  const v = voices.find(v=>v.lang.startsWith((lang||"fr-FR").split("-")[0]));
-  if (v) utt.voice=v;
+  const v = voices.find(v => v.lang.startsWith("fr"));
+  if (v) utt.voice = v;
   window.speechSynthesis.speak(utt);
 }
 
+// Public API — used everywhere in the app
+function speakText(text, lang) {
+  if (lang && !lang.startsWith("fr")) {
+    // Non-French (e.g. English) — use browser TTS
+    browserFallback(text, false);
+    return;
+  }
+  const persona = currentPersona || pickPersona();
+  playGeminiTTS(text, persona.voice, false);
+}
+
 function speakSlow(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang="fr-FR"; utt.rate=0.45;
-  const voices = window.speechSynthesis.getVoices();
-  const v = voices.find(v=>v.lang.startsWith("fr"));
-  if (v) utt.voice=v;
-  window.speechSynthesis.speak(utt);
+  // Slow mode: use Kore voice (clearest for slow speech)
+  playGeminiTTS(text, "Kore", true);
 }
 
 function autoSpeak() {
   const card = currentCard();
   if (!card) return;
-  setTimeout(()=>speakText(showDir==="fr"?card.fr:card.es, showDir==="fr"?"fr-FR":"en-US"), 300);
+  pickPersona();
+  setTimeout(() => speakText(showDir==="fr" ? card.fr : card.es, showDir==="fr" ? "fr-FR" : "en-US"), 300);
+}
+
+// Oral: auto-play on card load, show loading on button
+async function orAutoPlay() {
+  pickPersona();
+  const card = currentCard();
+  if (!card) return;
+  orPlayCount = 1;
+  const hint = document.getElementById('or-play-hint');
+  if (hint) hint.textContent = 'Play #1 · 2 fast plays left';
+  setPlayBtnLoading('or-play-btn', true);
+  await playGeminiTTS(card.fr, currentPersona.voice, false);
+  setPlayBtnLoading('or-play-btn', false);
+}
+
+// Pre-fetch next card's audio in background for instant playback
+function prefetchNext() {
+  if (deckIndex + 1 < deck.length) {
+    const next = deck[deckIndex + 1];
+    const persona = PERSONAS[Math.floor(Math.random() * PERSONAS.length)];
+    const cacheKey = `${persona.voice}|${next.fr}`;
+    if (!ttsCache.has(cacheKey)) {
+      fetch(`${WORKER_URL}/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: next.fr, voice: persona.voice, slow: false })
+      }).then(r => r.json()).then(({ audioBase64, mimeType }) => {
+        const binary = atob(audioBase64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([bytes], { type: mimeType || "audio/wav" }));
+        ttsCache.set(cacheKey, url);
+      }).catch(() => {});
+    }
+  }
 }
 
 // ─── PHONETICS ─────────────────────────────────────────────────────────────
@@ -1344,6 +1637,142 @@ function phoneticCompare(spoken, target) {
 }
 
 // ─── RESULT ────────────────────────────────────────────────────────────────
+
+// ── ORAL COMPREHENSION ───────────────────────────────────────────────────────
+let orPlayCount = 0;
+let orTimer = null, orTimeLeft = 20;
+const OR_SECS = 20;
+
+function orRenderCard() {
+  const card = currentCard();
+  const pct  = deck.length > 0 ? (deckIndex / deck.length) * 100 : 0;
+  const color = levelColors[card.level] || '#fff';
+
+  document.getElementById('or-score').textContent = score;
+  document.getElementById('or-progress-txt').textContent = (deckIndex+1) + ' / ' + deck.length;
+  document.getElementById('or-bar').style.width  = pct + '%';
+  document.getElementById('or-bar').style.background = color;
+  document.getElementById('or-level-badge').className   = 'level-badge badge-' + card.level;
+  document.getElementById('or-level-badge').textContent = card.level;
+  document.getElementById('or-cat').textContent  = card.category || '';
+  document.getElementById('or-play-hint').textContent = 'Tap to hear · fast speed';
+  document.getElementById('or-reveal').style.display = 'none';
+  orPlayCount = 0;
+
+  // Render options (show English translations to pick from)
+  const optEl = document.getElementById('or-options');
+  optEl.innerHTML = '';
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = '<span>' + (showDir==='fr' ? opt.es : opt.fr) + '</span>';
+    btn.onclick = () => orAnswer(i);
+    optEl.appendChild(btn);
+  });
+}
+
+function orAutoPlay() {
+  const btn = document.getElementById('or-play-btn');
+  if (btn) { btn.style.transform='scale(0.9)'; setTimeout(()=>btn.style.transform='scale(1)',130); }
+  const card = currentCard();
+  if (!card) return;
+  speakText(card.fr, 'fr-FR');
+  orPlayCount = 1;
+  document.getElementById('or-play-hint').textContent = 'Play #1 · 2 fast plays left';
+}
+
+async function orPlay() {
+  const card = currentCard();
+  if (!card) return;
+  orPlayCount++;
+  const hint = document.getElementById('or-play-hint');
+  const btn  = document.getElementById('or-play-btn');
+  if (btn) { btn.style.transform='scale(0.88)'; setTimeout(()=>btn.style.transform='scale(1)',130); }
+
+  if (orPlayCount >= 3) {
+    if (hint) hint.textContent = 'Play #' + orPlayCount + ' · 🐢 slow speed';
+    setPlayBtnLoading('or-play-btn', true);
+    await playGeminiTTS(card.fr, 'Kore', true);
+    setPlayBtnLoading('or-play-btn', false);
+  } else {
+    pickPersona();
+    const left = 2 - orPlayCount;
+    if (hint) hint.textContent = left > 0
+      ? 'Play #' + orPlayCount + ' · ' + left + ' fast play' + (left>1?'s':'') + ' left'
+      : 'Play #' + orPlayCount + ' · next will be 🐢 slow';
+    setPlayBtnLoading('or-play-btn', true);
+    await playGeminiTTS(card.fr, currentPersona.voice, false);
+    setPlayBtnLoading('or-play-btn', false);
+  }
+}
+
+function orAnswer(idx) {
+  if (selectedOpt !== null) return;
+  orStop();
+  selectedOpt = idx;
+  const card    = currentCard();
+  const isOk    = options[idx].es === card.es;
+  if (isOk) { score++; playBellSound(); }
+  else { playBuzzSound(); if (navigator.vibrate) navigator.vibrate([80,40,80]); }
+
+  // Color options
+  const optEl = document.getElementById('or-options');
+  Array.from(optEl.children).forEach((btn, i) => {
+    btn.disabled = true;
+    const iC = options[i].es === card.es;
+    if (i === idx && isOk)  { btn.style.background='rgba(74,222,128,0.1)';  btn.style.borderColor='#4ade80'; btn.style.color='#4ade80'; btn.innerHTML += '<span>✓</span>'; }
+    else if (i === idx)     { btn.style.background='rgba(248,113,113,0.1)'; btn.style.borderColor='#f87171'; btn.style.color='#f87171'; btn.innerHTML += '<span>✗</span>'; }
+    else if (iC)            { btn.style.borderColor='#4ade8050'; btn.style.color='#4ade8070'; }
+    else                    { btn.style.color = '#2a2a2a'; }
+  });
+
+  // Reveal the French text now
+  document.getElementById('or-reveal-text').textContent = card.fr;
+  document.getElementById('or-reveal').style.display = 'block';
+  document.getElementById('or-score').textContent = score;
+
+  setTimeout(nextCard, 1400);
+}
+
+function orTimedOut() {
+  if (selectedOpt !== null) return;
+  selectedOpt = -1;
+  playBuzzSound();
+  if (navigator.vibrate) navigator.vibrate([80,40,80]);
+  const card  = currentCard();
+  const optEl = document.getElementById('or-options');
+  Array.from(optEl.children).forEach((btn, i) => {
+    btn.disabled = true;
+    if (options[i].es === card.es) { btn.style.color='#4ade80'; btn.style.borderColor='#4ade80'; btn.innerHTML += '<span style="font-size:0.65rem;margin-left:6px;letter-spacing:1px;">← CORRECT</span>'; }
+    else btn.style.color = '#2a2a2a';
+  });
+  document.getElementById('or-reveal-text').textContent = card.fr;
+  document.getElementById('or-reveal').style.display = 'block';
+  setTimeout(nextCard, 2000);
+}
+
+// Timer
+function orStartTimer() {
+  orStop();
+  orTimeLeft = OR_SECS;
+  orUpdateBar();
+  orTimer = setInterval(() => {
+    orTimeLeft--;
+    orUpdateBar();
+    if (orTimeLeft <= 0) { orStop(); orTimedOut(); }
+  }, 1000);
+}
+function orStop() { if (orTimer) { clearInterval(orTimer); orTimer = null; } }
+function orUpdateBar() {
+  const bar   = document.getElementById('or-timer-bar');
+  const label = document.getElementById('or-timer-label');
+  if (!bar) return;
+  const pct = (orTimeLeft / OR_SECS) * 100;
+  bar.style.width = pct + '%';
+  bar.style.background = orTimeLeft > 10 ? '#fb923c' : orTimeLeft > 5 ? '#facc15' : '#f87171';
+  if (label) { label.textContent = orTimeLeft + 's'; label.style.color = orTimeLeft <= 5 ? '#f87171' : '#444'; }
+}
+
 function showResult() {
   const pct=score/deck.length;
   document.getElementById("res-trophy").textContent=pct>=0.8?"🏆":pct>=0.5?"👍":"💪";
