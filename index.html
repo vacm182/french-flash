@@ -246,6 +246,16 @@ body::before {
         </div>
         <button class="btn-secondary" onclick="startGame('quiz')">◈ Multiple Choice</button>
         <button class="btn-secondary" onclick="startGame('oral')" style="border-color:#fb923c;color:#fb923c;">🎧 Oral Comprehension</button>
+
+        <div id="tts-status" onclick="testTTS()" style="
+          margin-top:4px; padding:8px 12px; border-radius:4px;
+          border:1px solid #222; background:#111; cursor:pointer;
+          display:flex; align-items:center; gap:8px;
+          font-size:0.65rem; letter-spacing:1px; color:#444;
+        ">
+          <span id="tts-dot" style="width:8px;height:8px;border-radius:50%;background:#333;flex-shrink:0;"></span>
+          <span id="tts-msg">Tap to test voice quality</span>
+        </div>
       </div>
     </div>
 
@@ -1454,6 +1464,35 @@ async function orAutoPlay() {
   setPlayBtnLoading('or-play-btn', true);
   await playGeminiTTS(card.fr, currentPersona.voice, false);
   setPlayBtnLoading('or-play-btn', false);
+}
+
+// ── TTS STATUS TEST ───────────────────────────────────────────────────────────
+async function testTTS() {
+  const dot = document.getElementById('tts-dot');
+  const msg = document.getElementById('tts-msg');
+  dot.style.background = '#facc15';
+  msg.textContent = 'Testing Gemini voices…';
+
+  try {
+    const res = await fetch(`${WORKER_URL}/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: 'Bonjour, je suis Sophie.', voice: 'Aoede', slow: false })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const { audioBase64, mimeType } = await res.json();
+    if (!audioBase64) throw new Error('No audio data');
+    const binary = atob(audioBase64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([bytes], { type: mimeType || 'audio/wav' }));
+    new Audio(url).play();
+    dot.style.background = '#4ade80';
+    msg.textContent = '✓ Gemini TTS active — natural voices ON';
+  } catch (e) {
+    dot.style.background = '#f87171';
+    msg.textContent = '✗ Gemini offline — using browser TTS. Error: ' + e.message;
+  }
 }
 
 // Pre-fetch next card's audio in background for instant playback
