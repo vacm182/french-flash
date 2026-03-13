@@ -1351,22 +1351,19 @@ const WORKER_URL = "https://francais-flash.vacm182.workers.dev";
 
 // 8 Gemini voices mapped to distinct personas
 // Available Gemini TTS voices: Aoede, Charon, Fenrir, Kore, Puck, Orbit, Zephyr, Leda
-// rate: 1.0 = normal · >1 faster · <1 slower · sent to Gemini speakingRate
+// Confirmed Gemini TTS voices (8 total from Google docs)
+// rate = client-side playbackRate: 1.0 normal, >1 faster, <1 slower
 const PERSONAS = [
   // Women
-  { name:"Sophie",      voice:"Aoede",      rate:1.05, desc:"Young Parisian woman, upbeat"      },
-  { name:"Camille",     voice:"Kore",       rate:0.90, desc:"Teacher, clear and measured"       },
-  { name:"Élise",       voice:"Leda",       rate:1.18, desc:"Teenage girl, fast & light"        },
-  { name:"Nathalie",    voice:"Zephyr",     rate:0.82, desc:"Older woman, calm & warm"          },
-  { name:"Océane",      voice:"Sulafat",    rate:1.00, desc:"Mid-30s professional"              },
-  { name:"Grand-mère",  voice:"Gacrux",     rate:0.72, desc:"Elderly woman, slow & gentle"      },
+  { name:"Sophie",     voice:"Aoede",  rate:1.05, desc:"Young Parisian, upbeat"         },
+  { name:"Camille",    voice:"Kore",   rate:0.88, desc:"Teacher, clear & measured"      },
+  { name:"Élise",      voice:"Leda",   rate:1.20, desc:"Teenage girl, fast & light"     },
+  { name:"Nathalie",   voice:"Zephyr", rate:0.80, desc:"Older woman, calm & warm"       },
   // Men
-  { name:"Marc",        voice:"Charon",     rate:0.88, desc:"Middle-aged man, southern accent"  },
-  { name:"Théo",        voice:"Puck",       rate:1.12, desc:"Young man, casual & energetic"     },
-  { name:"Antoine",     voice:"Fenrir",     rate:0.95, desc:"Expressive storyteller"            },
-  { name:"Jean-Paul",   voice:"Orbit",      rate:0.78, desc:"Older man, deliberate"             },
-  { name:"Lucas",       voice:"Orus",       rate:1.08, desc:"Teen boy, quick"                   },
-  { name:"Grand-père",  voice:"Alnilam",    rate:0.68, desc:"Elderly man, very slow"            },
+  { name:"Marc",       voice:"Charon", rate:0.85, desc:"Middle-aged, southern"          },
+  { name:"Théo",       voice:"Puck",   rate:1.15, desc:"Young man, casual"              },
+  { name:"Antoine",    voice:"Fenrir", rate:0.95, desc:"Expressive storyteller"         },
+  { name:"Jean-Paul",  voice:"Orbit",  rate:0.72, desc:"Older man, deliberate"          },
 ];
 
 let currentPersona = null;
@@ -1388,12 +1385,18 @@ function setPlayBtnLoading(btnId, loading) {
 
 // Core TTS: fetch from Worker, cache result, play
 async function playGeminiTTS(text, voice, slow = false, rate = 1.0) {
-  const cacheKey = `${slow ? "SLOW" : voice + "|" + rate.toFixed(2)}|${text}`;
+  // Cache key includes voice only (not rate) — we adjust speed client-side via playbackRate
+  const cacheKey = `${slow ? "SLOW" : voice}|${text}`;
+
+  const playBlob = (url) => {
+    const audio = new Audio(url);
+    audio.playbackRate = slow ? 0.75 : rate;
+    audio.play().catch(() => browserFallback(text, slow));
+  };
 
   // Play from cache immediately if available
   if (ttsCache.has(cacheKey)) {
-    const audio = new Audio(ttsCache.get(cacheKey));
-    audio.play().catch(() => browserFallback(text, slow));
+    playBlob(ttsCache.get(cacheKey));
     return;
   }
 
@@ -1401,13 +1404,13 @@ async function playGeminiTTS(text, voice, slow = false, rate = 1.0) {
     const res = await fetch(`${WORKER_URL}/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, slow, rate })
+      body: JSON.stringify({ text, voice, slow })
     });
 
-    if (!res.ok) throw new Error("TTS fetch failed");
+    if (!res.ok) throw new Error("HTTP " + res.status);
     const { audioBase64, mimeType } = await res.json();
+    if (!audioBase64) throw new Error("No audio data");
 
-    // Decode base64 → Blob → URL
     const binary = atob(audioBase64);
     const bytes  = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -1415,8 +1418,7 @@ async function playGeminiTTS(text, voice, slow = false, rate = 1.0) {
     const url    = URL.createObjectURL(blob);
 
     ttsCache.set(cacheKey, url);
-    const audio = new Audio(url);
-    audio.play().catch(() => browserFallback(text, slow));
+    playBlob(url);
 
   } catch (e) {
     console.warn("Gemini TTS failed, using browser fallback:", e);
