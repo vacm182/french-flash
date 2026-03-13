@@ -1351,15 +1351,22 @@ const WORKER_URL = "https://francais-flash.vacm182.workers.dev";
 
 // 8 Gemini voices mapped to distinct personas
 // Available Gemini TTS voices: Aoede, Charon, Fenrir, Kore, Puck, Orbit, Zephyr, Leda
+// rate: 1.0 = normal · >1 faster · <1 slower · sent to Gemini speakingRate
 const PERSONAS = [
-  { name:"Sophie",    voice:"Aoede",  desc:"Bright young woman"        },
-  { name:"Marc",      voice:"Charon", desc:"Deep male, authoritative"  },
-  { name:"Camille",   voice:"Kore",   desc:"Calm, clear teacher"       },
-  { name:"Théo",      voice:"Puck",   desc:"Energetic young man"       },
-  { name:"Antoine",   voice:"Fenrir", desc:"Expressive, dramatic"      },
-  { name:"Élise",     voice:"Leda",   desc:"Warm young woman"          },
-  { name:"Nathalie",  voice:"Zephyr", desc:"Soft, breezy"              },
-  { name:"Jean-Paul", voice:"Orbit",  desc:"Steady, neutral anchor"    },
+  // Women
+  { name:"Sophie",      voice:"Aoede",      rate:1.05, desc:"Young Parisian woman, upbeat"      },
+  { name:"Camille",     voice:"Kore",       rate:0.90, desc:"Teacher, clear and measured"       },
+  { name:"Élise",       voice:"Leda",       rate:1.18, desc:"Teenage girl, fast & light"        },
+  { name:"Nathalie",    voice:"Zephyr",     rate:0.82, desc:"Older woman, calm & warm"          },
+  { name:"Océane",      voice:"Sulafat",    rate:1.00, desc:"Mid-30s professional"              },
+  { name:"Grand-mère",  voice:"Gacrux",     rate:0.72, desc:"Elderly woman, slow & gentle"      },
+  // Men
+  { name:"Marc",        voice:"Charon",     rate:0.88, desc:"Middle-aged man, southern accent"  },
+  { name:"Théo",        voice:"Puck",       rate:1.12, desc:"Young man, casual & energetic"     },
+  { name:"Antoine",     voice:"Fenrir",     rate:0.95, desc:"Expressive storyteller"            },
+  { name:"Jean-Paul",   voice:"Orbit",      rate:0.78, desc:"Older man, deliberate"             },
+  { name:"Lucas",       voice:"Orus",       rate:1.08, desc:"Teen boy, quick"                   },
+  { name:"Grand-père",  voice:"Alnilam",    rate:0.68, desc:"Elderly man, very slow"            },
 ];
 
 let currentPersona = null;
@@ -1380,8 +1387,8 @@ function setPlayBtnLoading(btnId, loading) {
 }
 
 // Core TTS: fetch from Worker, cache result, play
-async function playGeminiTTS(text, voice, slow = false) {
-  const cacheKey = `${slow ? "slow" : voice}|${text}`;
+async function playGeminiTTS(text, voice, slow = false, rate = 1.0) {
+  const cacheKey = `${slow ? "SLOW" : voice + "|" + rate.toFixed(2)}|${text}`;
 
   // Play from cache immediately if available
   if (ttsCache.has(cacheKey)) {
@@ -1394,7 +1401,7 @@ async function playGeminiTTS(text, voice, slow = false) {
     const res = await fetch(`${WORKER_URL}/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, slow })
+      body: JSON.stringify({ text, voice, slow, rate })
     });
 
     if (!res.ok) throw new Error("TTS fetch failed");
@@ -1433,12 +1440,11 @@ function browserFallback(text, slow = false) {
 // Public API — used everywhere in the app
 function speakText(text, lang) {
   if (lang && !lang.startsWith("fr")) {
-    // Non-French (e.g. English) — use browser TTS
     browserFallback(text, false);
     return;
   }
   const persona = currentPersona || pickPersona();
-  playGeminiTTS(text, persona.voice, false);
+  playGeminiTTS(text, persona.voice, false, persona.rate || 1.0);
 }
 
 function speakSlow(text) {
@@ -1462,7 +1468,7 @@ async function orAutoPlay() {
   const hint = document.getElementById('or-play-hint');
   if (hint) hint.textContent = 'Play #1 · 2 fast plays left';
   setPlayBtnLoading('or-play-btn', true);
-  await playGeminiTTS(card.fr, currentPersona.voice, false);
+  await playGeminiTTS(card.fr, currentPersona.voice, false, currentPersona.rate || 1.0);
   setPlayBtnLoading('or-play-btn', false);
 }
 
@@ -1740,7 +1746,7 @@ async function orPlay() {
       ? 'Play #' + orPlayCount + ' · ' + left + ' fast play' + (left>1?'s':'') + ' left'
       : 'Play #' + orPlayCount + ' · next will be 🐢 slow';
     setPlayBtnLoading('or-play-btn', true);
-    await playGeminiTTS(card.fr, currentPersona.voice, false);
+    await playGeminiTTS(card.fr, currentPersona.voice, false, currentPersona.rate || 1.0);
     setPlayBtnLoading('or-play-btn', false);
   }
 }
